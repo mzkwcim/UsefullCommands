@@ -1,0 +1,18 @@
+#Sprawdzenie numerów seryjnych monitorów
+Get-WmiObject wmimonitorid -Namespace root\wmi | ForEach-Object{($_.SerialnumberID | ForEach-Object{[char]$_}) -join ""} 
+
+#linia wyciągająca klucz windowsa 
+Get-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\SoftwareProtectionPlatform\' | Select-Object -ExpandProperty backupproductkeydefault
+
+#do usuwania rejestrów zawierających specyficzną nazwę
+Invoke-Command -ComputerName Mntbpln00155797 -ScriptBlock {
+    Get-ChildItem -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\" |
+    Where-Object { $_.PSChildName -like "{90160000-*" } |
+    ForEach-Object {
+       Remove-Item -Path "Registry::$_" -Recurse
+       Write-Output "Registry::$_"
+    }
+}
+
+#Sprawdzanie katalogu macierzystego dla konkretnego usera w domenie bez użycia rozszerzenia activedirectory
+((net user ar384 /domain | find "Katalog macierzysty") | Select-String "Katalog macierzysty") -replace "Katalog macierzysty\s+", ""
