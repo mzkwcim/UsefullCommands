@@ -16,3 +16,16 @@ Invoke-Command -ComputerName Mntbpln00155797 -ScriptBlock {
 
 #Sprawdzanie katalogu macierzystego dla konkretnego usera w domenie bez użycia rozszerzenia activedirectory
 ((net user ar384 /domain | find "Katalog macierzysty") | Select-String "Katalog macierzysty") -replace "Katalog macierzysty\s+", ""
+
+#wylistowanie unikalnych grup w podfolderach wskazanego folderu:
+$dirPath = "X:"
+$subDirectories = (Get-ChildItem -Path $dirPath).FullName
+$groupList = @()
+foreach ($subDirectory in $subDirectories)
+{
+    $acl = Get-acl -Path $subDirectory
+    $groups = $acl.Access | Where-Object { $_.IdentityReference -is [System.Security.Principal.NTAccount] } | Select-Object -ExpandProperty IdentityReference
+    $groupList += $groups
+}
+$uniqueGroups = $groupList | ForEach-Object { $_.ToString().ToLower() } | Select-Object -Unique
+$uniqueGroups
