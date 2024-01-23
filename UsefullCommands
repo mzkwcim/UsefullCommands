@@ -32,3 +32,6 @@ $uniqueGroups
 
 #wylistowanie wszystkich folderów z paska szybkiego dostępu i zapisanie ich do pliku tekstowego 
 (New-Object -ComObject Shell.Application).Namespace('shell:::{679f85cb-0220-4080-b29b-5540cc05aab6}').Items() | Where-Object { $_.IsFolder } | ForEach-Object { $_.Path } | Out-File -FilePath "$env:userprofile\desktop\listaSzybkiegoDostpu.txt"
+
+Dodania folderów do paska szybkiego dostępu z listy z pliku txt
+foreach($path in (Get-Content $env:userprofile\desktop\listaplików.txt)) { (new-object -com shell.application).Namespace($path).Self.InvokeVerb("pintohome") }
