@@ -5,7 +5,7 @@ Get-WmiObject wmimonitorid -Namespace root\wmi | ForEach-Object{($_.Serialnumber
 Get-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\SoftwareProtectionPlatform\' | Select-Object -ExpandProperty backupproductkeydefault
 
 #do usuwania rejestrów zawierających specyficzną nazwę
-Invoke-Command -ComputerName Mntbpln00155797 -ScriptBlock {
+Invoke-Command -ComputerName (hostname) -ScriptBlock {
     Get-ChildItem -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\" |
     Where-Object { $_.PSChildName -like "{90160000-*" } |
     ForEach-Object {
