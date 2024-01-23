@@ -29,3 +29,6 @@ foreach ($subDirectory in $subDirectories)
 }
 $uniqueGroups = $groupList | ForEach-Object { $_.ToString().ToLower() } | Select-Object -Unique
 $uniqueGroups
+
+#wylistowanie wszystkich folderów z paska szybkiego dostępu i zapisanie ich do pliku tekstowego 
+(New-Object -ComObject Shell.Application).Namespace('shell:::{679f85cb-0220-4080-b29b-5540cc05aab6}').Items() | Where-Object { $_.IsFolder } | ForEach-Object { $_.Path } | Out-File -FilePath "$env:userprofile\desktop\listaSzybkiegoDostpu.txt"
