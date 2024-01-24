@@ -33,5 +33,11 @@ $uniqueGroups
 #wylistowanie wszystkich folderów z paska szybkiego dostępu i zapisanie ich do pliku tekstowego 
 (New-Object -ComObject Shell.Application).Namespace('shell:::{679f85cb-0220-4080-b29b-5540cc05aab6}').Items() | Where-Object { $_.IsFolder } | ForEach-Object { $_.Path } | Out-File -FilePath "$env:userprofile\desktop\listaSzybkiegoDostpu.txt"
 
-Dodania folderów do paska szybkiego dostępu z listy z pliku txt
+#Dodania folderów do paska szybkiego dostępu z listy z pliku txt
 foreach($path in (Get-Content $env:userprofile\desktop\listaplików.txt)) { (new-object -com shell.application).Namespace($path).Self.InvokeVerb("pintohome") }
+
+#Zmiana skutku zamknięcia pokrywy 0 - nic nie rób 1 - uśpij 2 - hibernacja 3 - zamknij
+#podłączony
+powercfg -SETDCVALUEINDEX 381b4222-f694-41f0-9685-ff5bb260df2e 4f971e89-eebd-4455-a8de-9e59040e7347 5ca83367-6e45-459f-a27b-476b1d01c936 0
+#niepodłączony
+powercfg -SETACVALUEINDEX 381b4222-f694-41f0-9685-ff5bb260df2e 4f971e89-eebd-4455-a8de-9e59040e7347 5ca83367-6e45-459f-a27b-476b1d01c936 0
