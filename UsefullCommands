@@ -47,3 +47,6 @@ systeminfo | Select-String "OS name"
 
 #wylistowanie sieci wi-fi
 netsh wlan show networks | Select-String "SSID" | ForEach-Object { $_.ToString().Split(":")[1].Trim() }
+
+#Wyłączenie GUI w windowsie
+ taskkill /f /im explorer.exe
