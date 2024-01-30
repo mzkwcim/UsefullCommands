@@ -18,14 +18,14 @@ Invoke-Command -ComputerName (hostname) -ScriptBlock {
 ((net user ar384 /domain | find "Katalog macierzysty") | Select-String "Katalog macierzysty") -replace "Katalog macierzysty\s+", ""
 
 #wylistowanie unikalnych grup w podfolderach wskazanego folderu:
-$dirPath = "X:"
+$dirPath = "C:"
 $subDirectories = (Get-ChildItem -Path $dirPath).FullName
-$groupList = @()
+$groupList = New-Object -TypeName System.Collections.ArrayList
 foreach ($subDirectory in $subDirectories)
 {
     $acl = Get-acl -Path $subDirectory
     $groups = $acl.Access | Where-Object { $_.IdentityReference -is [System.Security.Principal.NTAccount] } | Select-Object -ExpandProperty IdentityReference
-    $groupList += $groups
+    $groupList.AddRange($groups)
 }
 $uniqueGroups = $groupList | ForEach-Object { $_.ToString().ToLower() } | Select-Object -Unique
 $uniqueGroups
