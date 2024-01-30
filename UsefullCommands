@@ -45,8 +45,15 @@ powercfg -SETACVALUEINDEX 381b4222-f694-41f0-9685-ff5bb260df2e 4f971e89-eebd-445
 #szybkie wyciągnięcie systemu operacyjnego
 systeminfo | Select-String "OS name"
 
-#wylistowanie sieci wi-fi
-netsh wlan show networks | Select-String "SSID" | ForEach-Object { $_.ToString().Split(":")[1].Trim() }
+#wylistowanie sieci wi-fi których SSID nie jest ukryty
+netsh wlan show networks | Select-String "SSID" | ForEach-Object { $ssid = $_.ToString().Split(":")[1].Trim(); if ($ssid -ne $null) { $ssid } }
+
+#Łączenie z daną siecią
+netsh wlan connect name="NazwaTwojejSieci"
+
+#zapominanie sieci wi-fi
+netsh wlan delete profile name="NazwaTwojejSieci"
 
 #Wyłączenie GUI w windowsie
  taskkill /f /im explorer.exe
+
