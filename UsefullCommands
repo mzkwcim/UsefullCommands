@@ -57,3 +57,6 @@ netsh wlan delete profile name="NazwaTwojejSieci"
 #Wyłączenie GUI w windowsie
  taskkill /f /im explorer.exe
 
+#Zmiana hasła 
+Set-LocalUser -Name $env:USERNAME -Password (ConvertTo-SecureString -AsPlainText "YourPassword" -Force)
+
