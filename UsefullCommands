@@ -60,3 +60,19 @@ netsh wlan delete profile name="NazwaTwojejSieci"
 #Zmiana hasła 
 Set-LocalUser -Name $env:USERNAME -Password (ConvertTo-SecureString -AsPlainText "YourPassword" -Force)
 
+#Dodanie skryptu przy uruchomieniu PowerShella
+$DoesExist = Test-Path $profile.CurrentUserAllHosts
+$command = 'gcm | Get-Random | Get-Help -Full'
+if ($DoesExist -ne $true){
+    New-Item -Path $profile.CurrentUserAllHosts -ItemType File -Force
+    echo 'Write-Host '$command | Out-File -Append -FilePath $profile.CurrentUserAllHosts
+    Write-Host "The profile has been created"
+    Write-Host "Command has been Added to the profile"
+}
+elseif((Get-Content $profile.CurrentUserAllHosts -Raw) -notcontains 'gcm | Get-Random | Get-Help -Full'){
+    echo 'Write-Host '$command | Out-File -Append -FilePath $profile.CurrentUserAllHosts
+    Write-Host "Profile already exists and command has been added"
+}
+
+
+
