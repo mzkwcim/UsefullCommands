@@ -91,5 +91,28 @@ elseif((Get-Content $profile.CurrentUserAllHosts -Raw) -notcontains 'gcm | Get-R
     Write-Host "Profile already exists and command has been added"
 }
 
+#Linia wyciągająca zapisane na komputerze linie sieci wi-fi z hasłami
+$Networks = New-Object 'System.Collections.Generic.HashSet[object]'
+
+foreach ($net in (netsh wlan show profile | Select-String "All")) {
+    $profileName = ($net -replace "    All User Profile     :", "").Trim()
+
+    $profileInfo = netsh wlan show profile name=($net -replace "    All User Profile     :", "").Trim() key=clear
+
+    $ssid = ((($profileInfo | Select-String "SSID ") -replace "SSID name\s*:\s*","").ToString().Trim() -replace "`"","")
+    $password = (($profileInfo | Select-String "Key Content") -replace "Key Content\s*:\s*","").ToString().Trim()
+    if ($ssid -ne "System.Object[]" -and $password -ne "System.Object[]"){
+        $network = [PSCustomObject]@{
+            SSID     = $ssid
+            Password = $password
+        }
+    }
+
+    [void]$Networks.Add($network)
+}
+# Wyświetl rezultaty jako tabelę
+$Networks | Format-Table -AutoSize
+
+
 
 
