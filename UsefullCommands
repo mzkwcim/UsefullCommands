@@ -118,5 +118,7 @@ Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\run
 #Sprawdzanie czy nic się nie odpala przy odpalaniu normalnych aplikacji
 Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\*' | Where-Object debugger | Select-Object PSChildName,Debugger
 
+#odapalanie kalkulatora przez odpalanie painta
+New-Item -Force "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\mspaint.exe" | Set-ItemProperty -name Debugger -Value "powershell -c Invoke-WebRequest calc#"
 
 
