@@ -1,0 +1,19 @@
+#It Locks the Sesion whenever user use a clipboard
+$previousClipboardContent = Get-Clipboard -Format Text
+while ($previousClipboardContent -eq (Get-Clipboard -Format Text)){
+    
+}
+
+$currentClipboardContent = Get-Clipboard -Format Text
+
+while (1) {
+    $currentClipboardContent = Get-Clipboard -Format Text
+
+    if ($currentClipboardContent -ne $previousClipboardContent) {
+        [void](Add-Type -m '[DllImport("user32.dll")]public static extern bool LockWorkStation();' -Name "Lock" -pas)::LockWorkStation()
+
+        $previousClipboardContent = $currentClipboardContent
+    }
+
+    Start-Sleep -Seconds 1
+}
