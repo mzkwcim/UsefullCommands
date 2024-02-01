@@ -62,3 +62,6 @@ New-Item -Force "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File E
 
 #listowanie liter a do z
 [char[]] ([int][char]'a'..[int][char]'z')
+
+#feed
+Invoke-RestMethod example.pl/example 
