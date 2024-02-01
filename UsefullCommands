@@ -115,6 +115,8 @@ $Networks | Format-Table -AutoSize
 #Sprawdzanie co się odpala po starcie maszyny
 Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\run
 
+#Sprawdzanie czy nic się nie odpala przy odpalaniu normalnych aplikacji
+Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\*' | Where-Object debugger | Select-Object PSChildName,Debugger
 
 
 
