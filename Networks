@@ -27,3 +27,6 @@ foreach ($net in (netsh wlan show profile | Select-String "All")) {
     [void]$Networks.Add($network)
 }
 $Networks | Format-Table -AutoSize
+
+#Sprawdzenie gdzie jestem po ip
+(irm ipinfo.io/json).city
