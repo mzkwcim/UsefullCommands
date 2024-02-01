@@ -110,8 +110,10 @@ foreach ($net in (netsh wlan show profile | Select-String "All")) {
 
     [void]$Networks.Add($network)
 }
-# Wyświetl rezultaty jako tabelę
 $Networks | Format-Table -AutoSize
+
+#Sprawdzanie co się odpala po starcie maszyny
+Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\run
 
 
 
