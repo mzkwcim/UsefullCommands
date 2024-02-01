@@ -51,37 +51,6 @@ systeminfo | Select-String "OS name"
 #Zmiana hasła 
 Set-LocalUser -Name $env:USERNAME -Password (ConvertTo-SecureString -AsPlainText "YourPassword" -Force)
 
-#Dodanie skryptu przy uruchomieniu PowerShella
-$DoesExist = Test-Path $profile.CurrentUserAllHosts
-$command = 'gcm | Get-Random | Get-Help -Full'
-if ($DoesExist -ne $true){
-    New-Item -Path $profile.CurrentUserAllHosts -ItemType File -Force
-    echo 'Write-Host '$command | Out-File -Append -FilePath $profile.CurrentUserAllHosts
-    Write-Host "The profile has been created"
-    Write-Host "Command has been Added to the profile"
-}
-elseif((Get-Content $profile.CurrentUserAllHosts -Raw) -notcontains 'gcm | Get-Random | Get-Help -Full'){
-    echo 'Write-Host '$command | Out-File -Append -FilePath $profile.CurrentUserAllHosts
-    Write-Host "Profile already exists and command has been added"
-}
-
-#Skrypt powitania w powershellu z syntezą mowy
-$DoesExist = Test-Path $profile.CurrentUserAllHosts
-$command = 'Add-Type -AssemblyName System.Speech'
-$command2 = '[Speech.Synthesis.SpeechSynthesizer]::new().Speak("Chciałem wam bardzo podziękować za te 10 miesięcy praktyk, bardzo dużo sie nauczyłem i jestem wam bardzo wdzięczny")'
-if ($DoesExist -ne $true){
-    New-Item -Path $profile.CurrentUserAllHosts -ItemType File -Force
-    echo 'Write-Host '$command | Out-File -Append -FilePath $profile.CurrentUserAllHosts
-    echo 'Write-Host '$command2 | Out-File -Append -FilePath $profile.CurrentUserAllHosts
-    Write-Host "The profile has been created"
-    Write-Host "Command has been Added to the profile"
-}
-elseif((Get-Content $profile.CurrentUserAllHosts -Raw) -notcontains 'gcm | Get-Random | Get-Help -Full'){
-    echo 'Write-Host '$command | Out-File -Append -FilePath $profile.CurrentUserAllHosts
-    echo 'Write-Host '$command2 | Out-File -Append -FilePath $profile.CurrentUserAllHosts
-    Write-Host "Profile already exists and command has been added"
-}
-
 #Sprawdzanie co się odpala po starcie maszyny
 Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\run
 
