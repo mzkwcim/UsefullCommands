@@ -45,15 +45,6 @@ powercfg -SETACVALUEINDEX 381b4222-f694-41f0-9685-ff5bb260df2e 4f971e89-eebd-445
 #szybkie wyciągnięcie systemu operacyjnego
 systeminfo | Select-String "OS name"
 
-#wylistowanie sieci wi-fi których SSID nie jest ukryty
-netsh wlan show networks | Select-String "SSID" | ForEach-Object { $ssid = $_.ToString().Split(":")[1].Trim(); if ($ssid -ne $null) { $ssid } }
-
-#Łączenie z daną siecią
-netsh wlan connect name="NazwaTwojejSieci"
-
-#zapominanie sieci wi-fi
-netsh wlan delete profile name="NazwaTwojejSieci"
-
 #Wyłączenie GUI w windowsie
  taskkill /f /im explorer.exe
 
@@ -90,27 +81,6 @@ elseif((Get-Content $profile.CurrentUserAllHosts -Raw) -notcontains 'gcm | Get-R
     echo 'Write-Host '$command2 | Out-File -Append -FilePath $profile.CurrentUserAllHosts
     Write-Host "Profile already exists and command has been added"
 }
-
-#Linia wyciągająca zapisane na komputerze linie sieci wi-fi z hasłami
-$Networks = New-Object 'System.Collections.Generic.HashSet[object]'
-
-foreach ($net in (netsh wlan show profile | Select-String "All")) {
-    $profileName = ($net -replace "    All User Profile     :", "").Trim()
-
-    $profileInfo = netsh wlan show profile name=($net -replace "    All User Profile     :", "").Trim() key=clear
-
-    $ssid = ((($profileInfo | Select-String "SSID ") -replace "SSID name\s*:\s*","").ToString().Trim() -replace "`"","")
-    $password = (($profileInfo | Select-String "Key Content") -replace "Key Content\s*:\s*","").ToString().Trim()
-    if ($ssid -ne "System.Object[]" -and $password -ne "System.Object[]"){
-        $network = [PSCustomObject]@{
-            SSID     = $ssid
-            Password = $password
-        }
-    }
-
-    [void]$Networks.Add($network)
-}
-$Networks | Format-Table -AutoSize
 
 #Sprawdzanie co się odpala po starcie maszyny
 Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\run
