@@ -17,3 +17,28 @@ while (1) {
 
     Start-Sleep -Seconds 1
 }
+
+#previous script as a task
+$skryptPath = @'
+$previousClipboardContent = Get-Clipboard -Format Text
+while ($previousClipboardContent -eq (Get-Clipboard -Format Text)) { }
+
+$currentClipboardContent = Get-Clipboard -Format Text
+while (1) {
+    $currentClipboardContent = Get-Clipboard -Format Text
+    if ($currentClipboardContent -ne $previousClipboardContent) {
+        [void](Add-Type -m '[DllImport("user32.dll")]public static extern bool LockWorkStation();' -Name "Lock" -pas)::LockWorkStation()
+        $previousClipboardContent = $currentClipboardContent
+    }
+    Start-Sleep -Seconds 1
+}
+'@
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass
+
+$action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument $skryptPath
+$trigger = New-ScheduledTaskTrigger -AtLogOn
+
+Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "UruchomienieSkryptuNaStart"
+
+
+
