@@ -82,3 +82,5 @@ while ($true) {
     Start-Sleep -Seconds 1
 }
 
+#przywileje użytkownika 
+whoami /priv
