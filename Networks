@@ -34,3 +34,6 @@ $Networks | Format-Table -AutoSize
 #sprawdzanie procesu po aktywnym porcie
 get-process | where id -eq (Get-NetTCPConnection | where remoteport -eq 5228 | select -ExpandProperty owningprocess).ToString().Trim() | select -ExpandProperty processname
 
+#pipelist enumeration
+gci \\.\pipe\
+
