@@ -51,4 +51,7 @@ gc $home\Desktop\2022_ThreatDetectionReport_RedCanary.pdf -s Zone.Identifier | i
 #usunięcie metadanych z pliku
 gc $home\Desktop\2022_ThreatDetectionReport_RedCanary.pdf -s Zone.Identifier | ri
 
+#wyświetlenie metadanych pliku z pulpitu
+gci $home\Desktop\ | % {gc $_.FullName -ea Si -s Zone.Identifier}
+
 
