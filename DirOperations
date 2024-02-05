@@ -1,2 +1,0 @@
-#listowanie folderów  wwielu kolumnach
-gci -Pa C:\Users\ak582\Desktop\ -R -di | select name | fw -C 4

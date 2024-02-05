@@ -1,0 +1,5 @@
+#listowanie folderów  wwielu kolumnach
+gci -Pa C:\Users\ak582\Desktop\ -R -di | select name | fw -C 4
+
+#wylistowanie plików o konkretnym rozszerzeniu
+gci -Pa $home\Desktop\ -File | Where Extension -eq .exe  | Select -Exp Name
