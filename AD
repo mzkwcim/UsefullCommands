@@ -1,2 +1,5 @@
 #wyciąganie userid po imieniu i nazwisku
 get-aduser -Filter "surname -like 'krakowiak' -and givenname -like 'waldemar'" | select -ExpandProperty name
+
+#wyciąganie samej nazwy użytkownika bez active directory
+((net user $env:username /domain | Sls "Nazwa u") -replace "nazwa \w+").Trim()
