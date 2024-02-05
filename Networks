@@ -37,4 +37,7 @@ get-process | where id -eq (Get-NetTCPConnection | where remoteport -eq 5228 | s
 #pipelist enumeration with access list
 ForEach($pipe in (gci \\.\pipe\)){try{if($pipe.GetAccessControl() -ne $null){$pipe.FullName;($pipe|% -Ea Si GetAccessControl|Select -exp access)+"`n"}}catch{}}
 
+#wysyłanie tekstu po icmp
+(ipconfig | Out-String) -split "(.{5})" -match "."| % {[Net.NetworkInformation.Ping]::new().Send("localhost",100, ([Text.Encoding]::UTF8).GetBytes($_))}
+
 
