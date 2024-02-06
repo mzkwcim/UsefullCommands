@@ -9,3 +9,12 @@ gi 'C:\Users\ak582\Desktop\Testowy' -fo | % { $_.Attributes = ($_.Attributes -ba
 
 #pozyskanie przybliżonego czasu powstania konta lokalnego, zakładając że informacji nie można znaleźć w winevent i metadane pliku nie zostały zmodyfikowane, można użyć bez ToString i Trim
 ((gci $home).CreationTime | sort | select -F 1).ToString().Trim()
+
+#wyciąganie pliku z konkretnym rozszerzeniem
+(gci -rec $home).Extension | sls "e"
+
+#wyciąganie nazw plików
+(gci -rec $home).Name | sls "e"
+
+#wyciąganie zawartości plików
+gci -rec $home | sls "e"
