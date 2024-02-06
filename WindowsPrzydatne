@@ -7,4 +7,5 @@ gi 'C:\Users\ak582\Desktop\Testowy' | % { $_.Attributes = ($_.Attributes -bor [S
 #usuwanie atrybutu ukryty
 gi 'C:\Users\ak582\Desktop\Testowy' -fo | % { $_.Attributes = ($_.Attributes -band (-bnot [System.IO.FileAttributes]::Hidden))}
 
-
+#pozyskanie przybliżonego czasu powstania konta lokalnego, zakładając że informacji nie można znaleźć w winevent i metadane pliku nie zostały zmodyfikowane, można użyć bez ToString i Trim
+((gci $home).CreationTime | sort | select -F 1).ToString().Trim()
