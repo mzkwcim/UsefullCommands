@@ -1,0 +1,13 @@
+$DirectoryPath = "C:\Users\ak582\Desktop\Testowy"
+$userName = "MNTBPLN00155795\TEST"
+$ACL = Get-Acl $DirectoryPath
+$userAccount = New-Object System.Security.Principal.NTAccount($userName)
+$rights = @('Delete','Synchronize','CreateFiles','Modify')
+$accessRights = [System.Security.AccessControl.FileSystemRights]::None
+foreach ($right in $rights) {
+    $accessRights = $accessRights -bor [System.Security.AccessControl.FileSystemRights]::$right
+}
+$accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule($userAccount, $accessRights, 'Allow')
+$acl.AddAccessRule($accessRule)
+Set-Acl -Path $DirectoryPath -AclObject $acl
+Get-Acl -Path $DirectoryPath
