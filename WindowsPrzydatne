@@ -27,3 +27,7 @@ Unregister-Event -SubscriptionId 1
 
 #usuwanie poświadczeń z poświadczeń systemu windows
 cmdkey /delete:poświadczenie/ippoświadczenia do usunięcia
+
+#usuwanie wszystkich poświadczeń
+cmdkey /list | Where { $_ -match "Target:" } | % { cmdkey /delete:($_ -replace "Target: ").Trim(); cmdkey /delete /ras }
+
