@@ -34,3 +34,5 @@ cmdkey /list | Where { $_ -match "Target:" } | % { cmdkey /delete:($_ -replace "
 #historia paska uruchom
 $i=gp HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\RunMRU;$i.MRUList.ToCharArray()|%{$i.$_}
 
+#historia wpisywania poleceń
+gc (Get-PSReadLineOption).HistorySavePath
