@@ -39,3 +39,7 @@ gc (Get-PSReadLineOption).HistorySavePath
 
 #usuwanie historii powershella 
 ri (Get-PSReadLineOption).HistorySavePath
+
+#wylistowanie wszystkich uprawnień
+$i=[System.Security.AccessControl.FileSystemRights];$i::GetValues($i)|select -unique|%{$_}
+
