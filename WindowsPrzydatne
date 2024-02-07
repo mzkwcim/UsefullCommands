@@ -43,3 +43,6 @@ ri (Get-PSReadLineOption).HistorySavePath
 #wylistowanie wszystkich uprawnień
 $i=[System.Security.AccessControl.FileSystemRights];$i::GetValues($i)|select -unique|%{$_}
 
+#utworzenie skrótu notatnika w menu kontekstowym
+ni -Path 'Registry::HKEY_CLASSES_ROOT\Directory\Background\shell\Notepad\command' -Force | sp -Name '(default)' -Value 'c:\windows\notepad.exe'
+
