@@ -36,3 +36,6 @@ $i=gp HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\RunMRU;$i.MRUList
 
 #historia wpisywania poleceń
 gc (Get-PSReadLineOption).HistorySavePath
+
+#usuwanie historii powershella 
+ri (Get-PSReadLineOption).HistorySavePath
