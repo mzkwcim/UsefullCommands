@@ -24,3 +24,6 @@ Register-WmiEvent -Query "SELECT * FROM win32_DeviceChangeEvent" -Action {Add-Ty
 
 #wyrejestrowanie Eventu po ID, id zamień na id swojego eventu
 Unregister-Event -SubscriptionId 1
+
+#usuwanie poświadczeń z poświadczeń systemu windows
+cmdkey /delete:poświadczenie/ippoświadczenia do usunięcia
