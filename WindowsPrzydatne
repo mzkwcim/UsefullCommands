@@ -31,3 +31,6 @@ cmdkey /delete:poświadczenie/ippoświadczenia do usunięcia
 #usuwanie wszystkich poświadczeń
 cmdkey /list | Where { $_ -match "Target:" } | % { cmdkey /delete:($_ -replace "Target: ").Trim(); cmdkey /delete /ras }
 
+#historia paska uruchom
+$i=gp HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\RunMRU;$i.MRUList.ToCharArray()|%{$i.$_}
+
