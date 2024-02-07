@@ -18,3 +18,9 @@ gi 'C:\Users\ak582\Desktop\Testowy' -fo | % { $_.Attributes = ($_.Attributes -ba
 
 #wyciąganie zawartości plików
 gci -rec $home | sls "e"
+
+#Zarejestrowanie Eventu z efektem dźwiekowym
+Register-WmiEvent -Query "SELECT * FROM win32_DeviceChangeEvent" -Action {Add-Type -AssemblyName System.Speech; [Speech.Synthesis.SpeechSynthesizer]::New().Speak("Cokolwiek")}
+
+#wyrejestrowanie Eventu po ID, id zamień na id swojego eventu
+Unregister-Event -SubscriptionId 1
