@@ -6,39 +6,44 @@ $form.Text = "Dodawanie Grup do Folderu"
 $form.Size = New-Object System.Drawing.Size(400, 200)
 $form.StartPosition = "CenterScreen"
 
-# Utwórz etykiety i pola tekstowe
+# Etykieta dla wpisywania ścieżek do folderu
 $labelPath = New-Object System.Windows.Forms.Label
 $labelPath.Text = "Ścieżka folderu:"
 $labelPath.Location = New-Object System.Drawing.Point(10, 20)
 $form.Controls.Add($labelPath)
 
+# Wprowadzanie Folderu
 $textboxPath = New-Object System.Windows.Forms.TextBox
 $textboxPath.Size = New-Object System.Drawing.Size(125, 20)
 $textboxPath.Location = New-Object System.Drawing.Point(150, 20)
 $form.Controls.Add($textboxPath)
 
+# Etykieta dla wpisywania grup do dodania
 $labelUser = New-Object System.Windows.Forms.Label
 $labelUser.Text = "Grupy do dodania:"
 $labelUser.Location = New-Object System.Drawing.Point(10, 50)
 $form.Controls.Add($labelUser)
 
+# Wprowadzenie grup do dodania
 $textboxUser = New-Object System.Windows.Forms.TextBox
 $textboxUser.Size = New-Object System.Drawing.Size(125, 20)
 $textboxUser.Location = New-Object System.Drawing.Point(150, 50)
 $form.Controls.Add($textboxUser)
 
+# Etykieta dla wprowadzenia uprawnień do dodania
 $labelRights = New-Object System.Windows.Forms.Label
 $labelRights.Text = "Prawa dostępu (oddzielone spacją):"
 $labelRights.Location = New-Object System.Drawing.Point(10, 80)
 $labelRights.Size = New-Object System.Drawing.Size(120, 25)
 $form.Controls.Add($labelRights)
 
+# Wprowadzenie uprawnień do dodania
 $textboxRights = New-Object System.Windows.Forms.TextBox
 $textboxRights.Size = New-Object System.Drawing.Size(125, 20)
 $textboxRights.Location = New-Object System.Drawing.Point(150, 80)
 $form.Controls.Add($textboxRights)
 
-# Utwórz przycisk "Dodaj Grupy"
+# Przycisk "Dodaj Grupy do wskazanego folderu ze wskazanymi uprawnieniami"
 $buttonAddGroups = New-Object System.Windows.Forms.Button
 $buttonAddGroups.Text = "Dodaj Grupy"
 $buttonAddGroups.Location = New-Object System.Drawing.Point(150, 110)
