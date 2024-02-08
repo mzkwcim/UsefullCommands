@@ -1,0 +1,37 @@
+Add-Type -AssemblyName System.Windows.Forms
+
+# Utwórz formularz
+$form = New-Object System.Windows.Forms.Form
+$form.Text = "Dynamiczne CheckBoxy"
+$form.Size = New-Object System.Drawing.Size(400, 400)
+$form.StartPosition = "CenterScreen"
+
+# Utwórz FlowLayoutPanel, aby dynamicznie zarządzać CheckBoxami
+$flowLayoutPanel = New-Object System.Windows.Forms.FlowLayoutPanel
+$flowLayoutPanel.Dock = [System.Windows.Forms.DockStyle]::Top
+$flowLayoutPanel.FlowDirection = [System.Windows.Forms.FlowDirection]::TopDown
+$flowLayoutPanel.WrapContents = $false
+$flowLayoutPanel.Size = New-Object System.Drawing.Size(200, 300) 
+$form.Controls.Add($flowLayoutPanel)
+
+# Przykładowa lista opcji (możesz ją dostosować do własnych potrzeb)
+$options = (gci C:\Users\ak582\Desktop\Serwerownia).FullName
+
+# Dodaj CheckBoxy do FlowLayoutPanel na podstawie listy opcji
+foreach ($option in $options) {
+    $checkBox = New-Object System.Windows.Forms.CheckBox
+    $checkBox.Text = $option
+    $flowLayoutPanel.Controls.Add($checkBox)
+}
+
+# Przycisk do zapisywania wybranych opcji
+$buttonSave = New-Object System.Windows.Forms.Button
+$buttonSave.Text = "Zapisz opcje"
+$buttonSave.Add_Click({
+    $selectedOptions = $flowLayoutPanel.Controls | Where-Object { $_.Checked } | ForEach-Object { $_.Text }
+    [System.Windows.Forms.MessageBox]::Show("Wybrane opcje: $($selectedOptions -join ', ')", "Zapisane opcje")
+})
+$form.Controls.Add($buttonSave)
+
+# Uruchom formularz
+$form.ShowDialog()
