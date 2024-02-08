@@ -46,3 +46,6 @@ $i=[System.Security.AccessControl.FileSystemRights];$i::GetValues($i)|select -un
 #utworzenie skrótu notatnika w menu kontekstowym
 ni -Path 'Registry::HKEY_CLASSES_ROOT\Directory\Background\shell\Notepad\command' -Force | sp -Name '(default)' -Value 'c:\windows\notepad.exe'
 
+#przeszukiwanie rejestru roota
+gci -rec 'Registry::HKEY_CLASSES_ROOT\' -Force | where -Property Property -Like '*account*'
+
