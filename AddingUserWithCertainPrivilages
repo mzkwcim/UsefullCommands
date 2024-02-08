@@ -1,11 +1,62 @@
-$DirectoryPath = Read-Host "Podaj ścieżkę folderu"
-$userName = Read-Host "Podaj grupy do dodania"
-$ACL = Get-Acl $DirectoryPath
-$userAccount = New-Object System.Security.Principal.NTAccount($userName)
-$rights = @((Read-Host "Podaj dostępy do dodania oddzielone spacją").Split(" "))
-$accessRights = [System.Security.AccessControl.FileSystemRights]::None
-foreach ($right in $rights) { $accessRights = $accessRights -bor [System.Security.AccessControl.FileSystemRights]::$right }
-$accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule($userAccount, $accessRights, 'Allow')
-$acl.AddAccessRule($accessRule)
-Set-Acl -Path $DirectoryPath -AclObject $acl
-Get-Acl -Path $DirectoryPath
+Add-Type -AssemblyName System.Windows.Forms
+
+# Utwórz formularz
+$form = New-Object System.Windows.Forms.Form
+$form.Text = "Dodawanie Grup do Folderu"
+$form.Size = New-Object System.Drawing.Size(400, 200)
+$form.StartPosition = "CenterScreen"
+
+# Utwórz etykiety i pola tekstowe
+$labelPath = New-Object System.Windows.Forms.Label
+$labelPath.Text = "Ścieżka folderu:"
+$labelPath.Location = New-Object System.Drawing.Point(10, 20)
+$form.Controls.Add($labelPath)
+
+$textboxPath = New-Object System.Windows.Forms.TextBox
+$textboxPath.Size = New-Object System.Drawing.Size(125, 20)
+$textboxPath.Location = New-Object System.Drawing.Point(150, 20)
+$form.Controls.Add($textboxPath)
+
+$labelUser = New-Object System.Windows.Forms.Label
+$labelUser.Text = "Grupy do dodania:"
+$labelUser.Location = New-Object System.Drawing.Point(10, 50)
+$form.Controls.Add($labelUser)
+
+$textboxUser = New-Object System.Windows.Forms.TextBox
+$textboxUser.Size = New-Object System.Drawing.Size(125, 20)
+$textboxUser.Location = New-Object System.Drawing.Point(150, 50)
+$form.Controls.Add($textboxUser)
+
+$labelRights = New-Object System.Windows.Forms.Label
+$labelRights.Text = "Prawa dostępu (oddzielone spacją):"
+$labelRights.Location = New-Object System.Drawing.Point(10, 80)
+$labelRights.Size = New-Object System.Drawing.Size(120, 25)
+$form.Controls.Add($labelRights)
+
+$textboxRights = New-Object System.Windows.Forms.TextBox
+$textboxRights.Size = New-Object System.Drawing.Size(125, 20)
+$textboxRights.Location = New-Object System.Drawing.Point(150, 80)
+$form.Controls.Add($textboxRights)
+
+# Utwórz przycisk "Dodaj Grupy"
+$buttonAddGroups = New-Object System.Windows.Forms.Button
+$buttonAddGroups.Text = "Dodaj Grupy"
+$buttonAddGroups.Location = New-Object System.Drawing.Point(150, 110)
+$buttonAddGroups.Add_Click({
+    $DirectoryPath = $textboxPath.Text
+    $userName = $textboxUser.Text
+    $ACL = Get-Acl $DirectoryPath
+    $userAccount = New-Object System.Security.Principal.NTAccount($userName)
+    $rights = @($textboxRights.Text.Split(" "))
+    $accessRights = [System.Security.AccessControl.FileSystemRights]::None
+    foreach ($right in $rights) { $accessRights = $accessRights -bor [System.Security.AccessControl.FileSystemRights]::$right }
+    $accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule($userAccount, $accessRights, 'Allow')
+    $acl.AddAccessRule($accessRule)
+    Set-Acl -Path $DirectoryPath -AclObject $acl
+    $result = ((Get-Acl $DirectoryPath).Access | where IdentityReference -li "*Test" | select -exp FileSystemRights).ToString()
+    [System.Windows.Forms.MessageBox]::Show($result, "Aktualne uprawnienia dla folderu")
+})
+$form.Controls.Add($buttonAddGroups)
+
+# Uruchom formularz
+$form.ShowDialog()
