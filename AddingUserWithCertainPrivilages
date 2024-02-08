@@ -1,12 +1,10 @@
-$DirectoryPath = "C:\Users\ak582\Desktop\Testowy"
-$userName = "MNTBPLN00155795\TEST"
+$DirectoryPath = Read-Host "Podaj ścieżkę folderu"
+$userName = Read-Host "Podaj grupy do dodania"
 $ACL = Get-Acl $DirectoryPath
 $userAccount = New-Object System.Security.Principal.NTAccount($userName)
-$rights = @('Delete','Synchronize','CreateFiles','Modify')
+$rights = @((Read-Host "Podaj dostępy do dodania oddzielone spacją").Split(" "))
 $accessRights = [System.Security.AccessControl.FileSystemRights]::None
-foreach ($right in $rights) {
-    $accessRights = $accessRights -bor [System.Security.AccessControl.FileSystemRights]::$right
-}
+foreach ($right in $rights) { $accessRights = $accessRights -bor [System.Security.AccessControl.FileSystemRights]::$right }
 $accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule($userAccount, $accessRights, 'Allow')
 $acl.AddAccessRule($accessRule)
 Set-Acl -Path $DirectoryPath -AclObject $acl
