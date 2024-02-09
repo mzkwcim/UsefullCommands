@@ -1,0 +1,278 @@
+Add-Type -AssemblyName System.Windows.Forms
+
+$global:FolderPathFromFirstForm = $null
+
+# Definiuj funkcję do wyświetlania drugiego formularza
+function Show-SecondForm {
+    param (
+        [string]$Data
+    )
+
+    # Utwórz formularz z CheckBoxami na podstawie danych z pierwszego formularza
+    $secondForm = New-Object System.Windows.Forms.Form
+    $secondForm.Text = "Dynamiczne CheckBoxy"
+    $secondForm.Size = New-Object System.Drawing.Size(400, 500)
+    $secondForm.StartPosition = "CenterScreen"
+
+    # Utwórz FlowLayoutPanel, aby dynamicznie zarządzać CheckBoxami
+    $flowLayoutPanel = New-Object System.Windows.Forms.FlowLayoutPanel
+    $flowLayoutPanel.Dock = [System.Windows.Forms.DockStyle]::Top
+    $flowLayoutPanel.FlowDirection = [System.Windows.Forms.FlowDirection]::TopDown
+    $flowLayoutPanel.WrapContents = $false
+    $flowLayoutPanel.Size = New-Object System.Drawing.Size(200, 350) 
+    $flowLayoutPanel.AutoScroll = $true
+    $secondForm.Controls.Add($flowLayoutPanel)
+
+    # Przykładowa lista opcji (możesz ją dostosować do własnych potrzeb)
+    $options = (gci $Data -Directory).Fullname  # Użyj danych z pierwszego formularza
+
+    # Dodaj CheckBoxy i etykiety do FlowLayoutPanel na podstawie listy opcji
+    foreach ($option in $options) {
+        $checkBox = New-Object System.Windows.Forms.CheckBox
+        $checkBox.Text = $option
+        $checkBox.AutoSize = $true
+        $flowLayoutPanel.Controls.Add($checkBox)
+    }
+
+    # Przycisk do zapisywania wybranych opcji
+    $buttonSave = New-Object System.Windows.Forms.Button
+    $buttonSave.Location = New-Object System.Drawing.Point(5, 360)  # Ustaw lokalizację przycisku (x, y)
+    $buttonSave.Size = New-Object System.Drawing.Size(100, 40)  # Ustaw rozmiar przycisku (szerokość, wysokość)
+    $buttonSave.Text = "Zapisz opcje"
+    $buttonSave.Add_Click({
+        $selectedOptions = $flowLayoutPanel.Controls | Where-Object { $_.Checked -and $_.GetType().Name -eq 'CheckBox' } | ForEach-Object { $_.Text }
+        $global:ResultVariable = $selectedOptions -join ' '  # Zapisz wynik w zmiennej globalnej
+        [System.Windows.Forms.MessageBox]::Show("Wybrane opcje: $($global:ResultVariable)", "Zapisane opcje")
+        $secondForm.DialogResult = [System.Windows.Forms.DialogResult]::OK  # Ustaw rezultat formularza na OK
+    })
+    $secondForm.Controls.Add($buttonSave)
+
+    # Dodaj przycisk do zaznaczania wszystkich opcji
+    $buttonSelectAll = New-Object System.Windows.Forms.Button
+    $buttonSelectAll.Location = New-Object System.Drawing.Point(115, 360)  # Ustaw lokalizację przycisku (x, y)
+    $buttonSelectAll.Size = New-Object System.Drawing.Size(100, 40)  # Ustaw rozmiar przycisku (szerokość, wysokość)
+    $buttonSelectAll.Text = "Zaznacz wszystkie"
+    $buttonSelectAll.Add_Click({
+    $anyChecked = $false
+        foreach ($checkBox in $flowLayoutPanel.Controls | Where-Object { $_.GetType().Name -eq 'CheckBox' }) {
+            if ($checkBox.Checked) {$anyChecked = $true; break}
+        }
+        foreach ($checkBox in $flowLayoutPanel.Controls | Where-Object { $_.GetType().Name -eq 'CheckBox' }) {
+            if ($anyChecked -eq $false){
+                $checkBox.Checked = $true
+            }else{
+                $checkBox.Checked = $false
+            }
+        }
+    })
+    $secondForm.Controls.Add($buttonSelectAll)
+
+    # Uruchom formularz
+    $result = $secondForm.ShowDialog()
+
+    # Sprawdź rezultat formularza i zamykaj go tylko w przypadku OK
+    if ($result -eq [System.Windows.Forms.DialogResult]::OK) {
+        $secondForm.Close()
+    }
+}
+
+function Show-ThirdForm {
+    param (
+        [string]$Data
+    )
+
+    # Utwórz formularz z CheckBoxami na podstawie danych z pierwszego formularza
+    $thirdForm = New-Object System.Windows.Forms.Form
+    $thirdForm.Text = "Dynamiczne CheckBoxy"
+    $thirdForm.Size = New-Object System.Drawing.Size(400, 500)
+    $thirdForm.StartPosition = "CenterScreen"
+
+    # Utwórz FlowLayoutPanel, aby dynamicznie zarządzać CheckBoxami
+    $flowLayoutPanel = New-Object System.Windows.Forms.FlowLayoutPanel
+    $flowLayoutPanel.Dock = [System.Windows.Forms.DockStyle]::Top
+    $flowLayoutPanel.FlowDirection = [System.Windows.Forms.FlowDirection]::TopDown
+    $flowLayoutPanel.WrapContents = $false
+    $flowLayoutPanel.Size = New-Object System.Drawing.Size(200, 350) 
+    $flowLayoutPanel.AutoScroll = $true
+    $thirdForm.Controls.Add($flowLayoutPanel)
+
+    # Przykładowa lista opcji (możesz ją dostosować do własnych potrzeb)
+    $acl = Get-Acl $Data
+    $options = $acl.Access | ForEach-Object { $_.IdentityReference.Value } | Select -Unique
+
+    # Dodaj CheckBoxy i etykiety do FlowLayoutPanel na podstawie listy opcji
+    foreach ($option in $options) {
+        $checkBox = New-Object System.Windows.Forms.CheckBox
+        $checkBox.Text = $option
+        $checkBox.AutoSize = $true
+        $flowLayoutPanel.Controls.Add($checkBox)
+    }
+
+    # Przycisk do zapisywania wybranych opcji
+    $buttonSave = New-Object System.Windows.Forms.Button
+    $buttonSave.Location = New-Object System.Drawing.Point(5, 360)  # Ustaw lokalizację przycisku (x, y)
+    $buttonSave.Size = New-Object System.Drawing.Size(100, 40)  # Ustaw rozmiar przycisku (szerokość, wysokość)
+    $buttonSave.Text = "Zapisz opcje"
+    $buttonSave.Add_Click({
+        $selectedOptions = $flowLayoutPanel.Controls | Where-Object { $_.Checked -and $_.GetType().Name -eq 'CheckBox' } | ForEach-Object { $_.Text }
+        $global:GroupsVariable = $selectedOptions -join ' '  # Zapisz wynik w zmiennej globalnej
+        [System.Windows.Forms.MessageBox]::Show("Wybrane opcje: $($global:GroupsVariable)", "Zapisane opcje")
+        $thirdForm.DialogResult = [System.Windows.Forms.DialogResult]::OK  # Ustaw rezultat formularza na OK
+    })
+    $thirdForm.Controls.Add($buttonSave)
+
+    # Dodaj przycisk do zaznaczania wszystkich opcji
+    $buttonSelectAll = New-Object System.Windows.Forms.Button
+    $buttonSelectAll.Location = New-Object System.Drawing.Point(115, 360)  # Ustaw lokalizację przycisku (x, y)
+    $buttonSelectAll.Size = New-Object System.Drawing.Size(100, 40)  # Ustaw rozmiar przycisku (szerokość, wysokość)
+    $buttonSelectAll.Text = "Zaznacz wszystkie"
+    $buttonSelectAll.Add_Click({
+        $anyChecked = $false
+        foreach ($checkBox in $flowLayoutPanel.Controls | Where-Object { $_.GetType().Name -eq 'CheckBox' }) {
+            if ($checkBox.Checked) { $anyChecked = $true; break }
+        }
+        foreach ($checkBox in $flowLayoutPanel.Controls | Where-Object { $_.GetType().Name -eq 'CheckBox' }) {
+            if ($anyChecked -eq $false){
+                $checkBox.Checked = $true
+            }else{
+                $checkBox.Checked = $false
+            }
+        }
+    })
+    $thirdForm.Controls.Add($buttonSelectAll)
+
+    # Uruchom formularz
+    $result = $thirdForm.ShowDialog()
+
+    # Sprawdź rezultat formularza i zamykaj go tylko w przypadku OK
+    if ($result -eq [System.Windows.Forms.DialogResult]::OK) {
+        $thirdForm.Close()
+    }
+}
+
+function Show-FourthForm {
+    param (
+        [string]$FolderPath
+    )
+
+    # Utwórz formularz
+    $fourthForm = New-Object System.Windows.Forms.Form
+    $fourthForm.Text = "Wyłącz dziedziczenie"
+    $fourthForm.Size = New-Object System.Drawing.Size(300, 150)
+    $fourthForm.StartPosition = "CenterScreen"
+
+    # Dodaj etykietę z pytaniem
+    $labelQuestion = New-Object System.Windows.Forms.Label
+    $labelQuestion.Text = "Czy chcesz wyłączyć dziedziczenie"
+    $labelQuestion.Location = New-Object System.Drawing.Point(10, 10)
+    $fourthForm.Controls.Add($labelQuestion)
+
+    # Dodaj przyciski Tak i Nie
+    $buttonYes = New-Object System.Windows.Forms.Button
+    $buttonYes.Text = "Tak"
+    $buttonYes.Location = New-Object System.Drawing.Point(10, 50)
+    $buttonYes.Add_Click({
+        icacls $FolderPath /inheritance:d
+        
+        [System.Windows.Forms.MessageBox]::Show("Dziedziczenie zostało wyłączone.", "Informacja")
+        $fourthForm.DialogResult = [System.Windows.Forms.DialogResult]::OK
+    })
+    $fourthForm.Controls.Add($buttonYes)
+
+    $buttonNo = New-Object System.Windows.Forms.Button
+    $buttonNo.Text = "Nie"
+    $buttonNo.Location = New-Object System.Drawing.Point(80, 50)
+    $buttonNo.Add_Click({
+        $fourthForm.DialogResult = [System.Windows.Forms.DialogResult]::Cancel
+    })
+    $fourthForm.Controls.Add($buttonNo)
+
+    $result = $fourthForm.ShowDialog()
+
+    $fourthForm.Close()
+}
+
+# Utwórz formularz z polami tekstowymi
+$firstForm = New-Object System.Windows.Forms.Form
+$firstForm.Text = "Pierwszy formularz"
+$firstForm.Size = New-Object System.Drawing.Size(400, 400)
+$firstForm.StartPosition = "CenterScreen"
+
+# Utwórz etykietę do pola tekstowego 1
+$firstlbl = New-Object System.Windows.Forms.Label
+$firstlbl.Text = "Wprowadź Ściężkę katalogu głównego:"
+$firstlbl.Size = New-Object System.Drawing.Size(250,20)
+$firstlbl.Location = New-Object System.Drawing.Point(10, 10)
+$firstForm.Controls.Add($firstlbl)
+
+# Dodaj TextBox i przycisk "Zatwierdź"
+$textBox = New-Object System.Windows.Forms.TextBox
+$textBox.Location = New-Object System.Drawing.Point(10, 30)
+$textBox.Size = New-Object System.Drawing.Size(200, 20)
+$global:MainPath = $textBox.Text
+$firstForm.Controls.Add($textBox)
+
+$buttonSubmit = New-Object System.Windows.Forms.Button
+$buttonSubmit.Text = "Katalogi"
+$buttonSubmit.Location = New-Object System.Drawing.Point(10, 60)
+$buttonSubmit.Add_Click({
+    $global:FirstFormData = $textBox.Text
+    $global:FolderPathFromFirstForm = $textBox.Text
+    Show-SecondForm -Data $global:FirstFormData  
+    $buttonFourthForm.Enabled = $true
+})
+$firstForm.Controls.Add($buttonSubmit)
+
+# Dodaj przycisk do wejścia do trzeciego formularza
+$buttonThirdForm = New-Object System.Windows.Forms.Button
+$buttonThirdForm.Text = "Grupy"
+$buttonThirdForm.Location = New-Object System.Drawing.Point(90, 60)
+$buttonThirdForm.Add_Click({
+    Show-ThirdForm -Data $global:FirstFormData
+    $buttonFourthForm.Enabled = $true
+})
+$firstForm.Controls.Add($buttonThirdForm)
+
+$buttonFourthForm = New-Object System.Windows.Forms.Button
+$buttonFourthForm.Text = "Wyłącz dziedziczenie"
+$buttonFourthForm.Location = New-Object System.Drawing.Point(170, 60)
+$buttonFourthForm.Size = New-Object System.Drawing.Size (120, 23)
+$buttonFourthForm.Enabled = $false
+$buttonFourthForm.Add_Click({
+    # Sprawdź, czy wynik z drugiego formularza istnieje
+    if ($global:ResultVariable) {
+        # Wywołaj funkcję czwartego formularza i przekaż ścieżkę folderu
+        Show-FourthForm -FolderPath $global:FirstFormData
+    } else {
+        [System.Windows.Forms.MessageBox]::Show("Proszę wprowadzić ścieżkę folderu w drugim formularzu.", "Błąd")
+    }
+})
+$firstForm.Controls.Add($buttonFourthForm)
+
+# Dodaj przycisk Zatwierdź w głównym formularzu
+$buttonSubmitMain = New-Object System.Windows.Forms.Button
+$buttonSubmitMain.Text = "Zatwierdź"
+$buttonSubmitMain.Location = New-Object System.Drawing.Point(10, 90)
+$buttonSubmitMain.Add_Click({
+     $confirmationResult = [System.Windows.Forms.MessageBox]::Show("Czy na pewno chcesz usunąć zaznaczone grupy z zaznaczonych folderów? Zaznaczone grupy: $($global:GroupsVariable -join ', ')`r`nZaznaczone foldery: $($global:ResultVariable)", "Potwierdzenie", [System.Windows.Forms.MessageBoxButtons]::YesNo)
+
+    # Sprawdź, czy użytkownik kliknął "Tak"
+    if ($confirmationResult -eq [System.Windows.Forms.DialogResult]::Yes) {
+            foreach ($dir in $global:ResultVariable.Split(" ")){
+                foreach ($group in $global:GroupsVariable.Split(" ")){
+                    $dir = $dir.ToString().Trim()
+                    $acl = Get-Acl $dir
+                    $acl.Access | Where { $_.IdentityReference.Value -eq $group -or $_.IdentityReference.Value -eq $group.ToString().ToLower()} | % {$acl.RemoveAccessRule($_)}
+                    Set-Acl -Path $dir -AclObject $acl
+                }
+            }
+        [System.Windows.Forms.MessageBox]::Show("Usunięto grupy: $($global:GroupsVariable -join ', ') z folderów: $($global:ResultVariable)")
+        }
+
+    
+})
+$firstForm.Controls.Add($buttonSubmitMain)
+
+
+[System.Windows.Forms.Application]::Run($firstForm)
+
