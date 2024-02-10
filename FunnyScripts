@@ -54,4 +54,35 @@ gc $home\Desktop\2022_ThreatDetectionReport_RedCanary.pdf -s Zone.Identifier | r
 #wyświetlenie metadanych pliku z pulpitu
 gci $home\Desktop\ | % {gc $_.FullName -ea Si -s Zone.Identifier}
 
+#poniższy skrypt wywołuje skrypt c# tak, żeby każdorazowe otwarcie pliku powodowało zmianę daty stworzenia pliku
+$csharpCode = @'
+using System;
+using System.IO;
+
+public class TimeChanger
+{
+    public static void Changer()
+    {
+        string path = @"C:\Users\mzkwcim\Desktop\CzasoZmieniacz.txt";
+        var creationTime = File.GetCreationTime(path);
+        var timer = new System.Timers.Timer();
+        timer.Interval = 3000;
+        timer.Elapsed += (s, e) => {
+            var lastAccess = File.GetLastAccessTime(path);
+            if (lastAccess > creationTime) {
+                File.SetCreationTime(path, lastAccess);
+            }
+        };
+        timer.Start();
+        while (timer.Enabled) ;
+    }
+}
+'@
+
+# Kompilacja i dodanie typu
+Add-Type -TypeDefinition $csharpCode -Language CSharp
+
+# Wywołanie metody z dodanego typu
+[TimeChanger]::Changer()
+
 
