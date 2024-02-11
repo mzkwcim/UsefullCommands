@@ -79,10 +79,11 @@ public class TimeChanger
 }
 '@
 
-# Kompilacja i dodanie typu
 Add-Type -TypeDefinition $csharpCode -Language CSharp
 
-# Wywołanie metody z dodanego typu
 [TimeChanger]::Changer()
+
+#przeszukanie danego folderu z plikami z alternatywnym datastreamem
+gci | % {gi $_.FullName -s * | where {($_.Stream | sls -N "Data")} | select filename, stream}
 
 
