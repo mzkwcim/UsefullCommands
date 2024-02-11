@@ -49,3 +49,9 @@ ni -Path 'Registry::HKEY_CLASSES_ROOT\Directory\Background\shell\Notepad\command
 #przeszukiwanie rejestru roota
 gci -rec 'Registry::HKEY_CLASSES_ROOT\' -Force | where -Property Property -Like '*account*'
 
+#usuwanie wszystkich plików z jumplisty ze sprawdzaniem czy ścieżka istnieje
+$recentItemsPath = Join-Path $env:APPDATA 'Microsoft\Windows\Recent'; if (Test-Path $recentItemsPath -PathType C) { gci -Path $recentItemsPath | ri -Fo } 
+
+#jw bez sprawdzania czy ścieżka istnieje
+gci (Join-Path $env:APPDATA 'Microsoft\Windows\Recent') | ri -Fo
+
