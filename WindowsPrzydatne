@@ -58,3 +58,6 @@ gci (Join-Path $env:APPDATA 'Microsoft\Windows\Recent') | ri -Fo
 #odblokowanie i zablokowanie konta administracyjnego w windowsie, potrzebne uprawnienia administratorskie
 glu -n administrator | dlu
 glu -n administrator | elu
+
+#trawłe załączenie dysku
+net use <nazwa dysku> /persistance:yes
