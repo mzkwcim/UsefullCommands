@@ -102,4 +102,10 @@ sp HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced Hidden 0
 sp HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced Filter 1
 sp HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced Hidden 1
 
+#set hidden system files as visible
+sp HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced ShowSuperHidden 1
+
+#set hidden system files as unvisible
+sp HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced ShowSuperHidden 0
+
 
