@@ -96,6 +96,10 @@ sp HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced HideFileExt
 
 #set hidden files as visible
 sp HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced Filter 0
+sp HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced Hidden 0
 
 #set hidden files as hidden
 sp HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced Filter 1
+sp HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced Hidden 1
+
+
