@@ -87,3 +87,9 @@ whoami /priv
 
 #ścieżka do dowolnego katalogu
 [system.environment]::GetFolderPath("desktop")
+
+#always show file extension 
+sp HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced HideFileExt 0
+
+#alwyas hide file extension
+sp HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced HideFileExt 1
