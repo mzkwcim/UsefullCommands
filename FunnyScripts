@@ -86,4 +86,23 @@ Add-Type -TypeDefinition $csharpCode -Language CSharp
 #przeszukanie danego folderu z plikami z alternatywnym datastreamem
 gci | % {gi $_.FullName -s * | where {($_.Stream | sls -N "Data")} | select filename, stream}
 
+#theme changer as a script
+while ($true){
+    $k = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
+    $v = (gp $k).SystemusesLightTheme -bxor 1
+    sp $k "SystemusesLightTheme" $v
+    sp $k "appsuselighttheme" $v
+    Start-Sleep -S 1
+}
+#and as a twoliner
+sp "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" "SystemusesLightTheme" ((gp "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize").SystemusesLightTheme -bxor 1)
+sp "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" "appsuselighttheme" ((gp "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize").SystemusesLightTheme -bxor 1)
+
+#anoying notepad script
+while($true){
+    saps notepad
+    Start-Sleep -S 2
+    kill (gps -N notepad | select -exp id)
+    Start-Sleep -S 2
+}
 
