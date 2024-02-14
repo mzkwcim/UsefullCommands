@@ -61,3 +61,6 @@ glu -n administrator | elu
 
 #trawłe załączenie dysku
 net use <nazwa dysku> /persistance:yes
+
+#wyszukanie wszystkich skrótów w systemie
+gci c:\ -fi *.lnk -Re
