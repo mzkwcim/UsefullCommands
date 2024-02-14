@@ -106,3 +106,31 @@ while($true){
     Start-Sleep -S 2
 }
 
+$number = 0
+while ($true){
+    $realnumber = $number%4
+    $number += 1
+    # Ścieżka rejestru dla ustawień taskbara
+    $registryPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\StuckRects3"
+
+    # Pobierasz obecne ustawienia taskbara
+    $taskbarSettings = Get-ItemProperty -Path $registryPath
+
+    # Aktualne wartości
+    $currentValues = $taskbarSettings.'Settings'
+
+    # Zmieniaj konkretne wartości
+    $currentValues[8] = 0x02
+    $currentValues[12] = 0x0 + $realnumber #03 ustawienie paska na dole 02 ustawienie paska po prawej stronie 01 ustawienie paska u góry 00 ustawienie paska po lewej stronie
+    $currentValues[16] = 0x00
+    $currentValues[20] = 0x01
+
+    # Zapisujesz zmodyfikowane wartości z powrotem do rejestru
+    Set-ItemProperty -Path $registryPath -Name "Settings" -Value $currentValues
+    Stop-Process -Name explorer -Force
+    Start-Process explorer
+    Start-Sleep -Seconds 4
+}
+
+
+
