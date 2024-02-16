@@ -64,3 +64,19 @@ net use <nazwa dysku> /persistance:yes
 
 #wyszukanie wszystkich skrótów w systemie
 gci c:\ -fi *.lnk -Re
+
+#chowanie okna powershella
+saps powershell.exe
+sleep 5
+$hwnd = (gps -Name powershell | Select -F 1).MainWindowHandle
+Add-Type @"
+    using System;
+    using System.Runtime.InteropServices;
+    
+    public class User32 {
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+    }
+"@
+[User32]::ShowWindow($hwnd, 0)
