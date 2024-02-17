@@ -1,5 +1,5 @@
 #listowanie folderów  wwielu kolumnach
-gci -Pa C:\Users\ak582\Desktop\ -R -di | select name | fw -C 4
+gci $home\Desktop\ -R -di | select name | fw -C 4
 
 #wylistowanie plików o konkretnym rozszerzeniu
 gci -Pa $home\Desktop\ -File | Where Extension -eq .exe  | Select -Exp Name
@@ -8,5 +8,5 @@ gci -Pa $home\Desktop\ -File | Where Extension -eq .exe  | Select -Exp Name
 C:\Users\<username>\AppData\Local\Microsoft\Windows\Explorer
 
 #usuwanie buforu miniatur
-Start-Process -FilePath "cleanmgr.exe" -ArgumentList "/D $env:SystemDrive" -Wait
+saps -FileP "cleanmgr.exe" -ArgumentList "/D $env:SystemDrive" -Wait
 
