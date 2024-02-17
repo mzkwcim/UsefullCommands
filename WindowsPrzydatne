@@ -50,10 +50,12 @@ ni -Path 'Registry::HKEY_CLASSES_ROOT\Directory\Background\shell\Notepad\command
 gci -rec 'Registry::HKEY_CLASSES_ROOT\' -Force | where -Property Property -Like '*account*'
 
 #usuwanie wszystkich plików z jumplisty ze sprawdzaniem czy ścieżka istnieje
+if (Test-Path "$env:APPDATA\Microsoft\Windows\Recent" -PathT C) { gci "$env:APPDATA\Microsoft\Windows\Recent" | ri -Fo }
 $recentItemsPath = Join-Path $env:APPDATA 'Microsoft\Windows\Recent'; if (Test-Path $recentItemsPath -PathType C) { gci -Path $recentItemsPath | ri -Fo } 
 
 #jw bez sprawdzania czy ścieżka istnieje
 gci (Join-Path $env:APPDATA 'Microsoft\Windows\Recent') | ri -Fo
+gci "$env:APPDATA\Microsoft\Windows\Recent" | ri -Fo 
 
 #odblokowanie i zablokowanie konta administracyjnego w windowsie, potrzebne uprawnienia administratorskie
 glu -n administrator | dlu
