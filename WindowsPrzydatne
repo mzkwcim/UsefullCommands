@@ -82,3 +82,15 @@ Add-Type @"
     }
 "@
 [User32]::ShowWindow($hwnd, 0)
+
+#wyłączenie powershella 2.0
+Disable-WindowsOptionalFeature -o -F MicrosoftWindowsPowerShellV2
+sp "HKLM:\Software\Microsoft\PowerShell\1\PowerShellEngine" -Name RuntimePreferencence -value 3 -ea Si 
+Get-WindowsOptionalFeature -O -F MicrosoftWindowsPowerShellV2 -Ea Si 
+
+#włączenie constrainedlanguage - trzeba pamiętać o restarcie powershella przed wykonaniem tej komedny + admin
+$ExecutionContext.SessionState.LanguageMode = "FullLanguage"
+
+#wyłączenie constrainedlanguage 
+$ExecutionContext.SessionState.LanguageMode = "ConstrainedLanguage"
+
