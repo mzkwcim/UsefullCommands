@@ -94,3 +94,6 @@ $ExecutionContext.SessionState.LanguageMode = "FullLanguage"
 #wyłączenie constrainedlanguage 
 $ExecutionContext.SessionState.LanguageMode = "ConstrainedLanguage"
 
+#changing ownership
+$path = "$home\AppData\Local\Microsoft\Windows\History\low";$acl = Get-Acl $path;$acl.SetOwner([System.Security.Principal.NTAccount]::new((whoami)));Set-Acl $Path $acl
+
