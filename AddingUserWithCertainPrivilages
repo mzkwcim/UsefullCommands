@@ -39,7 +39,7 @@ function Show-SecondForm {
     $buttonSave.Text = "Zapisz opcje"
     $buttonSave.Add_Click({
         $selectedOptions = $flowLayoutPanel.Controls | Where-Object { $_.Checked -and $_.GetType().Name -eq 'CheckBox' } | ForEach-Object { $_.Text }
-        $global:ResultVariable = $selectedOptions -join ' '  # Zapisz wynik w zmiennej globalnej
+        $global:ResultVariable = $selectedOptions -join ','  # Zapisz wynik w zmiennej globalnej
         [System.Windows.Forms.MessageBox]::Show("Wybrane opcje: $($global:ResultVariable)", "Zapisane opcje")
         $secondForm.Close()  # Zamknij drugi formularz po zatwierdzeniu
     })
@@ -104,7 +104,7 @@ function Show-ThirdForm{
     $buttonSave.Text = "Zapisz opcje"
     $buttonSave.Add_Click({
         $selectedOptions = $flowLayoutPanel.Controls | Where-Object { $_.Checked -and $_.GetType().Name -eq 'CheckBox' } | ForEach-Object { $_.Text }
-        $global:GroupsVariable = $selectedOptions -join ' '  # Zapisz wynik w zmiennej globalnej
+        $global:GroupsVariable = $selectedOptions -join ','  # Zapisz wynik w zmiennej globalnej
         [System.Windows.Forms.MessageBox]::Show("Wybrane opcje: $($global:GroupsVariable)", "Zapisane opcje")
         $thirdForm.Close()  # Zamknij drugi formularz po zatwierdzeniu
     })
@@ -169,7 +169,7 @@ function Show-FourthForm{
     $buttonSave.Text = "Zapisz opcje"
     $buttonSave.Add_Click({
         $selectedOptions = $flowLayoutPanel.Controls | Where-Object { $_.Checked -and $_.GetType().Name -eq 'CheckBox' } | ForEach-Object { $_.Text }
-        $global:PermissionVariable = $selectedOptions -join ' '  # Zapisz wynik w zmiennej globalnej
+        $global:PermissionVariable = $selectedOptions -join ','  # Zapisz wynik w zmiennej globalnej
         [System.Windows.Forms.MessageBox]::Show("Wybrane opcje: $($global:PermissionVariable)", "Zapisane opcje")
         $fourthForm.Close()  # Zamknij drugi formularz po zatwierdzeniu
     })
@@ -198,6 +198,56 @@ function Show-FourthForm{
 
     # Uruchom formularz
     $fourthForm.ShowDialog()
+}
+
+function Show-FifthForm{
+    #struktura formularza
+    $fifthForm = New-Object System.Windows.Forms.Form
+    $fifthForm.Text = "Potwierdzenie"
+    $fifthForm.Size = New-Object System.Drawing.Size(300, 100)
+    $fifthForm.StartPosition = "CenterScreen"
+
+    #etykieta
+    $locallbl = New-Object System.Windows.Forms.Label
+    $locallbl.Text = "Would you like to confirm your choices?" 
+    $locallbl.Location = New-Object System.Drawing.Point(10,10)
+    $locallbl.Size = New-Object System.Drawing.Size(250, 20)
+    $fifthForm.Controls.Add($locallbl)
+
+    #przycisk nie
+    $buttonNo = New-Object System.Windows.Forms.Button
+    $buttonNo.Location = New-Object System.Drawing.Point(80,35)
+    $buttonNo.Size = New-Object System.Drawing.Size(60, 25)
+    $buttonNo.Text = "No"
+    $buttonNo.Add_Click({
+        $fifthForm.Close()
+    })
+    $fifthForm.Controls.Add($buttonNo)
+
+    #przycisk tak
+    $buttonYes = New-Object System.Windows.Forms.Button
+    $buttonYes.Location = New-Object System.Drawing.Point(10,35)
+    $buttonYes.Size = New-Object System.Drawing.Size(60, 25)
+    $buttonYes.Text = "Yes"
+    $buttonYes.Add_Click({
+        $global:ResultVariable
+        $global:GroupsVariable
+        $global:PermissionVariable
+        foreach($dir in $global:ResultVariable.Split(",")){
+            foreach($group in $global:GroupsVariable.Split(",")){
+                foreach($permission in $global:PermissionVariable.Split(",")){
+                    $acl = Get-Acl $dir
+                    $rule = New-Object System.Security.AccessControl.FileSystemAccessRule("$group", $permission, "ContainerInherit, ObjectInherit", "None", "Allow")
+                    $acl.AddAccessRule($rule)
+                    Set-Acl -Path $dir -AclObject $acl
+                } 
+            }
+        }
+        [System.Windows.Forms.MessageBox]::Show("Wybrane opcje: $($global:ResultVariable) `nWybrane grupy: $($global:GroupsVariable) `nWybrane dostępy: $($global:PermissionVariable)", "Zapisane opcje")
+        $fifthForm.Close()
+    })
+    $fifthForm.Controls.Add($buttonYes)
+    $fifthForm.ShowDialog()
 }
 
 # Utwórz formularz z polami tekstowymi
@@ -248,6 +298,15 @@ $buttonSelectPermisions.Add_Click({
     Show-FourthForm
 })
 $firstForm.Controls.Add($buttonSelectPermisions)
+
+$buttonConfirmChoices = New-Object System.Windows.Forms.Button
+$buttonConfirmChoices.Location = New-Object System.Drawing.Point(10, 95)
+$buttonConfirmChoices.Size = New-Object System.Drawing.Size(120,25)
+$buttonConfirmChoices.Text = "Potwierdź"
+$buttonConfirmChoices.Add_Click({
+    Show-FifthForm
+})
+$firstForm.Controls.Add($buttonConfirmChoices)
 
 # Uruchom pierwszy formularz
 [System.Windows.Forms.Application]::Run($firstForm)
