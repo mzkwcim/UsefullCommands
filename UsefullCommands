@@ -108,4 +108,7 @@ sp HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced ShowSuperHi
 #set hidden system files as unvisible
 sp HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced ShowSuperHidden 0
 
+#wypisanie pamięci RAM
+(wmic memorychip list full | sls "Cap") -replace ".+="
+
 
