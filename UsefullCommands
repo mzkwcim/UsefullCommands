@@ -43,7 +43,7 @@ powercfg -SETDCVALUEINDEX 381b4222-f694-41f0-9685-ff5bb260df2e 4f971e89-eebd-445
 powercfg -SETACVALUEINDEX 381b4222-f694-41f0-9685-ff5bb260df2e 4f971e89-eebd-4455-a8de-9e59040e7347 5ca83367-6e45-459f-a27b-476b1d01c936 0
 
 #szybkie wyciągnięcie systemu operacyjnego
-((systeminfo | Select-String "OS Name") -replace "\w+\s\w+:").Trim()
+((systeminfo | Sls "OS Name") -replace ".+:").Trim()
 
 #Wyłączenie GUI w windowsie
  taskkill /f /im explorer.exe
