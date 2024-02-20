@@ -97,3 +97,10 @@ $ExecutionContext.SessionState.LanguageMode = "ConstrainedLanguage"
 #changing ownership
 $path = "$home\AppData\Local\Microsoft\Windows\History\low";$acl = Get-Acl $path;$acl.SetOwner([System.Security.Principal.NTAccount]::new((whoami)));Set-Acl $Path $acl
 
+#wyciąganie klass z cim
+Get-CimClass -n 'root/cimv2' | where cimclassname -li "*whatever*"
+
+#wyciąganie klas wmi
+gwmi -Li
+
+
