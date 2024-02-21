@@ -130,7 +130,29 @@ function Show-ThirdForm{
     })
     $thirdForm.Controls.Add($buttonSelectAll)
 
-    # Uruchom formularz
+    # Dodaj TextBox i przycisk "Zatwierdź"
+    $textBox = New-Object System.Windows.Forms.TextBox
+    $textBox.Location = New-Object System.Drawing.Point(225, 360)
+    $textBox.Size = New-Object System.Drawing.Size(120, 20)
+    $thirdForm.Controls.Add($textBox)
+
+    $buttonSubmit = New-Object System.Windows.Forms.Button
+    $buttonSubmit.Text = "Wprowadź dopisane grupy"
+    $buttonSubmit.Location = New-Object System.Drawing.Point(225, 390)
+    $buttonSubmit.Size = New-Object System.Drawing.Size(120,25)
+    $global:GroupsVariable = $options
+    $buttonSubmit.Add_Click({
+        $global:GroupsVariable = $global:GroupsVariable + ($textBox.Text).Split(" ")
+        foreach ($option in ($textBox.Text).Split(",")) {
+            $checkBox = New-Object System.Windows.Forms.CheckBox
+            $checkBox.Text = $option
+            $checkBox.AutoSize = $true
+            $flowLayoutPanel.Controls.Add($checkBox)
+        }
+        $textBox.Text = ""
+    })
+    $thirdForm.Controls.Add($buttonSubmit)
+
     $thirdForm.ShowDialog()
 }
 
