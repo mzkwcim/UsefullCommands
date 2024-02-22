@@ -137,6 +137,14 @@ while ($true){[System.Windows.Forms.Cursor]::Position = New-Object System.Drawin
 
 #oneliner piszący
 [System.Windows.Forms.SendKeys]::SendWait('^{ESC}'); "Weź się kurwa do roboty" | % {[System.Windows.Forms.SendKeys]::SendWait($_)}
+
+#zmiana rotacji monitora w kółko
+while ($true){
+    [System.Windows.Forms.SendKeys]::SendWait('^%{LEFT}')
+    [System.Windows.Forms.SendKeys]::SendWait('^%{DOWN}')
+    [System.Windows.Forms.SendKeys]::SendWait('^%{RIGHT}')
+    [System.Windows.Forms.SendKeys]::SendWait('^%{UP}')
+}
     
    
 
