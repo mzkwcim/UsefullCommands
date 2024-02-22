@@ -145,6 +145,9 @@ while ($true){
     [System.Windows.Forms.SendKeys]::SendWait('^%{RIGHT}')
     [System.Windows.Forms.SendKeys]::SendWait('^%{UP}')
 }
+
+#jw jako oneliner
+while($true){@('^%{LEFT}', '^%{DOWN}', '^%{RIGHT}', '^%{UP}') | % {[System.Windows.Forms.SendKeys]::SendWait($_)}}
     
    
 
