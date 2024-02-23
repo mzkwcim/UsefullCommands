@@ -3,6 +3,7 @@ Get-WmiObject wmimonitorid -Namespace root\wmi | ForEach-Object{($_.Serialnumber
 
 #linia wyciągająca klucz windowsa 
 Get-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\SoftwareProtectionPlatform\' | Select-Object -ExpandProperty backupproductkeydefault
+(wmic path softwarelicensingservice get OA3xOriginalProductKey)[2]
 
 #do usuwania rejestrów zawierających specyficzną nazwę
 Invoke-Command -ComputerName (hostname) -ScriptBlock {
