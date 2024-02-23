@@ -133,7 +133,7 @@ while ($true){
 }
 
 #oneliner zmieniający pozycję kursora co 5 sekund
-while ($true){[System.Windows.Forms.Cursor]::Position = New-Object System.Drawing.Point((Get-Random -Ma 1920), (get-random -Ma 1080) ); Start-Sleep -S 5}
+for(){[System.Windows.Forms.Cursor]::Position = New-Object System.Drawing.Point((Random 1920), (random 1080) ); Sleep 5}
 
 #oneliner piszący
 [System.Windows.Forms.SendKeys]::SendWait('^{ESC}'); "Weź się kurwa do roboty" | % {[System.Windows.Forms.SendKeys]::SendWait($_)}
