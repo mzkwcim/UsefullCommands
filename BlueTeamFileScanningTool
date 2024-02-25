@@ -4,7 +4,7 @@ while ((Test-Path $filePath) -eq $false){
     $filePath = Read-Host "Insert full path to the file"
 }
 $sha256 = (Get-FileHash -A SHA256 $filePath).Hash
-$apiKey = "bb1a3edb89f91a766aa59bfb8bfa56f2fe527f063db831a7a8b7922e7a1fb398"
+$apiKey = "xxx"
 $queryUrl = "https://www.virustotal.com/vtapi/v2/file/report?apikey=$apiKey&resource=$sha256"
 $response = Invoke-RestMethod -Uri $queryUrl -Method Get
 
