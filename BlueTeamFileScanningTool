@@ -1,0 +1,27 @@
+$filePath = Read-Host "Insert full path to the file"
+while ((Test-Path $filePath) -eq $false){
+    Write-Host "you have entered wrong path"
+    $filePath = Read-Host "Insert full path to the file"
+}
+$sha256 = (Get-FileHash -A SHA256 $filePath).Hash
+$apiKey = "bb1a3edb89f91a766aa59bfb8bfa56f2fe527f063db831a7a8b7922e7a1fb398"
+$queryUrl = "https://www.virustotal.com/vtapi/v2/file/report?apikey=$apiKey&resource=$sha256"
+$response = Invoke-RestMethod -Uri $queryUrl -Method Get
+
+$customObject = [PSCustomObject]@{
+    LastAccessTimeUtc = (gi $filePath).LastAccessTimeUtc 
+    LastWriteTimeUtc = (gi $filePath).LastWriteTimeUtc 
+    MD5 = (Get-FileHash -A MD5 $filePath).Hash
+    SHA1 = (Get-FileHash -A SHA1 $filePath).Hash
+    SHA256 = (Get-FileHash -A SHA256 $filePath).Hash
+    SignerCertificate = (Get-AuthenticodeSignature $filePath).SignerCertificate
+    TimeStamperCertificate = (Get-AuthenticodeSignature $filePath).TimeStamperCertificate
+    Status = (Get-AuthenticodeSignature $filePath).Status
+    StatusMessage = (Get-AuthenticodeSignature $filePath).StatusMessage
+    Path = (Get-AuthenticodeSignature $filePath).Path
+    SignatureType = (Get-AuthenticodeSignature $filePath).SignatureType
+    IsOSBinary = (Get-AuthenticodeSignature $filePath).IsOSBinary
+    ScanningResults = if ($response.response_code -eq 1) {"Wynik skanowania: $($response.positives) pozytywnych, $($response.total) wszystkich."} else {"Brak dostępu do wyników skanowania."}
+}
+
+$customObject
