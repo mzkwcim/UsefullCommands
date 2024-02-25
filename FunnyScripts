@@ -155,4 +155,5 @@ for(){@('^%{LEFT}', '^%{DOWN}', '^%{RIGHT}', '^%{UP}') | % {[System.Windows.Form
 #czytanie wikipedii
 Add-Type -AssemblyName System.Speech;[Speech.Synthesis.SpeechSynthesizer]::new().Speak((iwr https://pl.wikipedia.org/wiki/Ptaki).content + [regex]::Escape('<td style="width: 100%;"') -replace "<.*?>")
 
-
+#skrypt zmieniający lokację pliku
+$directories = (gci "$home\Desktop" -r -di).FullName;for(){mi (gci "$home\Desktop" -r "example.txt").Fullname ($directories|random) -Fo;Sleep 5}
