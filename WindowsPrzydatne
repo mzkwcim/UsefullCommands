@@ -103,4 +103,15 @@ Get-CimClass -n 'root/cimv2' | where cimclassname -li "*whatever*"
 #wyciąganie klas wmi
 gwmi -Li
 
+#menedżer urządzeń w powershellu
+Get-PnpDevice | select -Property *
+
+#wyciągnięcie dysków w komputerze
+get-physicaldisk
+
+#dyski i partycje
+Get-Disk | Get-Partition | Format-Table -AutoSize
+
+
+
 
