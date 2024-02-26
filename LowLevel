@@ -1,0 +1,12 @@
+$fileStream = New-Object System.IO.FileStream("\\.\PhysicalDrive0", [System.IO.FileMode]::Open, [System.IO.FileAccess]::Read)
+$binaryReader = New-Object System.IO.BinaryReader($fileStream)
+try {
+    $mbrBytes = $binaryReader.ReadBytes(512)
+    $mbrHex = $mbrBytes | ForEach-Object { $_.ToString("X2") }
+    Write-Host "Zawartość MBR:"
+    $formattedHex = ($mbrHex -split '(.{2})' | ForEach-Object { $_ }) -join ' '
+    $formattedHex -split '(.{47})' | ForEach-Object { Write-Host $_ }
+}
+finally {
+    $fileStream.Close()
+}
