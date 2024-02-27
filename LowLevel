@@ -1,8 +1,1 @@
-$fileStream = New-Object System.IO.FileStream("\\.\PhysicalDrive0", [System.IO.FileMode]::Open, [System.IO.FileAccess]::Read)
-$binaryReader = New-Object System.IO.BinaryReader($fileStream)
-try {
-    $formattedHex = ((($binaryReader.ReadBytes(512) | % { $_.ToString("X2") }) -split '(.{2})' | % { $_ }) -join ' ').ToString().Replace("  "," ") -split '(.{64})' | % { if ($_ -ne "") {Write-Host $_ }}
-}
-finally {
-    $fileStream.Close()
-}
+try{$formattedHex=((((New-Object System.IO.BinaryReader(New-Object System.IO.FileStream("\\.\PhysicalDrive0",[System.IO.FileMode]::Open,[System.IO.FileAccess]::Read))).ReadBytes(512)|%{ $_.ToString("X2")}) -split '(.{2})'|%{$_}) -join ' ').ToString().Replace("  "," ") -split '(.{64})'|%{if($_ -ne ""){Write-Host $_ }}}finally{$fileStream.Close()}
