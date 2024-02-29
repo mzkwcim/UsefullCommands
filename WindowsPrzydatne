@@ -112,6 +112,7 @@ get-physicaldisk
 #dyski i partycje
 Get-Disk | Get-Partition | Format-Table -AutoSize
 
-
+#usuwanie plików o konkretnych rozszerzeniach z danego folderu i jego podfolderów
+$command=gci $home\Desktop\Screenshots -Rec|where{$_.extension -eq ".png" -or $_.Extension -eq ".jpg"};for(){if($command -ne $null){$command|%{ri -fo $_.Fullname -ea si}}}
 
 
