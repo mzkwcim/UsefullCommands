@@ -1,6 +1,6 @@
 $env:Path += ";C:\Program Files\PostgreSQL\16\bin"
 $env:PGPASSWORD = 'xd'
-$xd = psql -U postgres -h localhost -d WOZP -c "SELECT czas FROM rekordy_kobiet_11_letnich_lcm WHERE imie = 'ZawodniczkaX';"
+$counter = 0
+((psql -U postgres -h localhost -d WOZP -c "SELECT czas FROM rekordy_kobiet_11_letnich_lcm WHERE imie = 'ZawodniczkaX';") | % {($_ | sls "\d+.\d+").ToString().Trim()}) | % {if ($_ -lt 30) {$counter++}}
 Remove-Item Env:\PGPASSWORD
-$makarena = $xd | % {($_ | sls "\d+.\d+" -ea si).ToString().Trim()}
-$makarena[0]
+$counter
