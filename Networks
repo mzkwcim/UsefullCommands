@@ -34,4 +34,9 @@ $Networks | Format-Table -AutoSize
 #wysyłanie tekstu po icmp
 (ipconfig | Out-String) -split "(.{5})" -match "."| % {[Net.NetworkInformation.Ping]::new().Send("localhost",100, ([Text.Encoding]::UTF8).GetBytes($_))}
 
+#lista otwartych portów
+(Get-NetTCPConnection | Where-Object {$_.State -eq 'Listen'}).LocalPort
+
+
+
 
