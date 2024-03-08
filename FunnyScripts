@@ -178,3 +178,7 @@ while (1) {
 
     Start-Sleep -Seconds 1
 }
+
+#one liner that tracks mouse movement and writte it to file
+
+for(){"$([System.Windows.Forms.Cursor]::Position.X), $([System.Windows.Forms.Cursor]::Position.Y)"|Out-File '$home\Desktop\New Text Document.txt' -E ascii -A;Sleep 1}
