@@ -180,5 +180,7 @@ while (1) {
 }
 
 #one liner that tracks mouse movement and writte it to file
-
 for(){"$([System.Windows.Forms.Cursor]::Position.X), $([System.Windows.Forms.Cursor]::Position.Y)"|Out-File '$home\Desktop\New Text Document.txt' -E ascii -A;Sleep 1}
+
+#one liner pobierający i wyświetlający kot wrocka
+"C$home\Desktop\wrocek.jpg"|%{iwr "https://s3.eu-central-1.amazonaws.com/cdn.koty.pl/wrocek_1f69c0783f.jpg" -o $_;sleep 1; saps $_}
