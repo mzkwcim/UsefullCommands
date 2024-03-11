@@ -31,3 +31,13 @@ $customObject = [PSCustomObject]@{
 }
 
 $customObject
+
+#scanning tool for enitre system
+$apiKey = "xxx"
+foreach($var in ((PSDrive | ? Root -like "*:\").Root | % {ls $_ -Recurse -File | select -exp fullname})){
+    $sha256 = Get-FileHash $var -Algorithm SHA256
+    $queryUrl = "https://www.virustotal.com/vtapi/v2/file/report?apikey=$apiKey&resource=$sha256"
+    $response = Invoke-RestMethod -Uri $queryUrl -Method Get
+    if ($response.response_code -eq 1) {"Wynik skanowania: $($response.positives) pozytywnych, $($response.total) wszystkich."} else {"Brak dostępu do wyników skanowania."}
+}
+
