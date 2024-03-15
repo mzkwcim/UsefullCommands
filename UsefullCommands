@@ -112,4 +112,9 @@ sp HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced ShowSuperHi
 #wypisanie pamięci RAM
 (wmic memorychip list full | sls "Cap") -replace ".+="
 
+#one liner zwracający listę dostępnych aktualizacji
+(New-Object -ComObject Microsoft.Update.Session).CreateUpdateSearcher().Search("IsInstalled=0").Updates | select title
+
+
+
 
