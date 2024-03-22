@@ -184,3 +184,18 @@ for(){"$([System.Windows.Forms.Cursor]::Position.X), $([System.Windows.Forms.Cur
 
 #one liner pobierający i wyświetlający kot wrocka
 "C$home\Desktop\wrocek.jpg"|%{iwr "https://s3.eu-central-1.amazonaws.com/cdn.koty.pl/wrocek_1f69c0783f.jpg" -o $_;sleep 1; saps $_}
+
+#ten skrypt dodaj lub usuwa strzałki przy ikonach skrótów:
+if (gp "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Icons" "29" -Ea Si) {
+    Write-Host "Wartość o nazwie '29' istnieje w podanej ścieżce rejestru."
+    rp -path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Icons" -name "29" -Ea Si
+    write-host "Wartość została usunięta"
+    kill -name explorer -Force
+    saps explorer
+} else {
+    Write-Host "Wartość o nazwie '29' nie istnieje w podanej ścieżce rejestru."
+    New-ItemProperty -path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Icons" -name "29" -Ea Si
+    write-host "Wartość została Stowrzona"
+    kill -name explorer -Force
+    saps explorer
+}
