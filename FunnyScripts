@@ -199,3 +199,11 @@ if (gp "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Icons" "2
     kill -name explorer -Force
     saps explorer
 }
+
+#skrypt zmieniający pozycję kursora, kiedy przekorczona zostanie określona pozycja
+for(){
+    if ([System.Windows.Forms.Cursor]::Position.X -lt 1000 -and [System.Windows.Forms.Cursor]::Position.Y -lt 500){
+        [System.Windows.Forms.Cursor]::Position = New-Object System.Drawing.Point((Random 1920), (random 1080) );
+    }
+    Sleep 1
+}
