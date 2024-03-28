@@ -3,3 +3,7 @@ get-aduser -Filter "surname -like 'krakowiak' -and givenname -like 'waldemar'" |
 
 #wyciąganie samej nazwy użytkownika bez active directory
 ((net user $env:username /domain | Sls "Nazwa u") -replace "nazwa \w+").Trim()
+
+#wyciąganie userów 
+Get-ADUser -Filter {Enabled -eq $true -and UserPrincipalName -notlike '*_*'} -SearchScope Subtree -Properties Title, UserPrincipalName
+
