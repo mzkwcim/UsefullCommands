@@ -7,3 +7,5 @@ get-aduser -Filter "surname -like 'krakowiak' -and givenname -like 'waldemar'" |
 #wyciąganie userów 
 Get-ADUser -Filter {Enabled -eq $true -and UserPrincipalName -notlike '*_*'} -SearchScope Subtree -Properties Title, UserPrincipalName
 
+#wyciąganie userów  Z poszczególnych OU
+Get-ADUser -filter * -searchbase "given OU" 
