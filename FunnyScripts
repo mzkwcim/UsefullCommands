@@ -207,3 +207,11 @@ for(){
     }
     Sleep 1
 }
+
+#ADS nie do wykrycie nie znając nazwy ADSa, poniżej przykłady:
+sc c:\ -s Zone.Identifier "saps powershell_ise.exe"
+sc c:\ -s DATA "saps calc"
+#wywołanie
+gc c:\ -s Zone.Identifier | iex
+
+
