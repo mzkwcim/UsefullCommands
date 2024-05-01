@@ -118,4 +118,6 @@ $command=gci $home\Desktop\Screenshots -Rec|where{$_.extension -eq ".png" -or $_
 #podmiana authorization managera: 
 ($ctx=$ExecutionContext.GetType().GetField("_context","nonpublic,instance").GetValue($ExecutionContext)).GetType().GetField("_authorizationManager","nonpublic,instance").SetValue($ctx, (New-Object System.Management.Automation.AuthorizationManager "Microsoft.PowerShell"))
 
+gc C:\ -Recurse | gi -Stream * | where Stream -ne ':$DATA' | select FileName, Stream
+
 
