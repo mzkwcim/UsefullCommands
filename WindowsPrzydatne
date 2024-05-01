@@ -115,4 +115,7 @@ Get-Disk | Get-Partition | Format-Table -AutoSize
 #usuwanie plików o konkretnych rozszerzeniach z danego folderu i jego podfolderów
 $command=gci $home\Desktop\Screenshots -Rec|where{$_.extension -eq ".png" -or $_.Extension -eq ".jpg"};for(){if($command -ne $null){$command|%{ri -fo $_.Fullname -ea si}}}
 
+#podmiana authorization managera: 
+($ctx=$ExecutionContext.GetType().GetField("_context","nonpublic,instance").GetValue($ExecutionContext)).GetType().GetField("_authorizationManager","nonpublic,instance").SetValue($ctx, (New-Object System.Management.Automation.AuthorizationManager "Microsoft.PowerShell"))
+
 
