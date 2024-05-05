@@ -222,4 +222,7 @@ $vBlock = {
 $validator = [ValidateScript]($vBlock)
 (Get-Variable -Name Password).Attributes.Add($validator)
 
+#pozyskiwanie zawartości pliku zawartej w innym pliku
+gc -Wait /tmp/centaur.log | % { gc ($_ -replace ".+Something") }
+
 
