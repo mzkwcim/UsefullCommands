@@ -120,4 +120,7 @@ $command=gci $home\Desktop\Screenshots -Rec|where{$_.extension -eq ".png" -or $_
 
 gc C:\ -Recurse | gi -Stream * | where Stream -ne ':$DATA' | select FileName, Stream
 
+#użycie komendy do przeniesienia się do rdp
+mstsc /v:hostname
+
 
