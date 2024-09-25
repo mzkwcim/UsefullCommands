@@ -15,6 +15,28 @@ Invoke-Command -ComputerName (hostname) -ScriptBlock {
     }
 }
 
+#do sprawdzania wielkości folderu
+function Get-Size(){ 
+    [CmdletBinding()] 
+    param( 
+        [parameter(Mandatory=$true, Position=0)] 
+        [string]$path, 
+        [parameter(Mandatory=$false, Position=1)] 
+        [int]$size 
+    ) 
+    $fullSize = 0 
+    $items = Get-ChildItem $path 
+
+    foreach($item in $items){ 
+        if ((gi $item).FullName -is [System.IO.DirectoryInfo]){ 
+            $fullSize = Get-Size (gi $item).FullName 
+        } else { 
+            $fullSize += [int](gi $item).Length 
+        } 
+    } 
+    return $fullSize/1MB 
+} 
+
 #Sprawdzanie katalogu macierzystego dla konkretnego usera w domenie bez użycia rozszerzenia activedirectory
 ((net user ar384 /domain | find "Katalog macierzysty") | Select-String "Katalog macierzysty") -replace "Katalog macierzysty\s+", ""
 
