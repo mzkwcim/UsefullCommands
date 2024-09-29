@@ -137,6 +137,14 @@ sp HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced ShowSuperHi
 #one liner zwracający listę dostępnych aktualizacji
 (New-Object -ComObject Microsoft.Update.Session).CreateUpdateSearcher().Search("IsInstalled=0").Updates | select title
 
+#another base64 converter
+$mimeContent = "tu_wstaw_zakodowany_string_base64"
+
+$base64Content = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($mimeContent))
+
+Write-Output $base64Content
+
+
 
 
 
