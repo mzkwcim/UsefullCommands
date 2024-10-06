@@ -225,4 +225,5 @@ $validator = [ValidateScript]($vBlock)
 #pozyskiwanie zawartości pliku zawartej w innym pliku
 gc -Wait /tmp/centaur.log | % { gc ($_ -replace ".+Something") }
 
-
+#changing brightness
+for(){100..1 | % {(Get-WmiObject -namespace root/wmi -class WmiMonitorBrightnessMethods).wmisetbrightness(1,$_)};1..100 | % {(Get-WmiObject -namespace root/wmi -class WmiMonitorBrightnessMethods).wmisetbrightness(1,$_)}}
