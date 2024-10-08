@@ -44,4 +44,21 @@ for($i = 1; $i -lt $users.Count; $i++){
     @("AD_JIRA_External", "AD_JIRA_HMEPM_Customers", "AD_JIRA_HMECS_Customers", "AD_JIRA_CHA_Customers") | % {Add-ADGroupMember -Identity $_ -Members $usernames[$i] -Server 10.90.1.5}
 }
 
+#getting recursive list of reports
+function Get-DirectReportsRecursively {
+    param (
+        [string]$UserDN,
+        [string]$Server = "10.90.1.5",
+        [string]$indent = ""
+    )
+    $user = Get-ADUser -Identity $UserDN -Server $Server -Properties directReports, mail
+    Write-Output "$indent$($user.mail)"
+    if ($user.directReports) {
+        foreach ($report in $user.directReports) {
+            Get-DirectReportsRecursively -UserDN $report -Server $Server -indent "$indent`t"
+        }
+    }
+}
+
+
 
