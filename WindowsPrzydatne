@@ -123,4 +123,20 @@ gc C:\ -Recurse | gi -Stream * | where Stream -ne ':$DATA' | select FileName, St
 #użycie komendy do przeniesienia się do rdp
 mstsc /v:hostname
 
+#taking screenshoot
+Add-Type -AssemblyName System.Windows.Forms
+Add-Type -AssemblyName System.Drawing
+
+
+$bitmap = New-Object System.Drawing.Bitmap ([System.Windows.Forms.SystemInformation]::VirtualScreen.Width), ([System.Windows.Forms.SystemInformation]::VirtualScreen.Height)
+
+$graphics = [System.Drawing.Graphics]::FromImage($bitmap)
+
+$graphics.CopyFromScreen(0, 0, 0, 0, $bitmap.Size)
+
+$bitmap.Save("C:\users\mzkwcim\Desktop\screenshot1.png", [System.Drawing.Imaging.ImageFormat]::Png)
+
+
+$graphics.Dispose()
+$bitmap.Dispose()
 
