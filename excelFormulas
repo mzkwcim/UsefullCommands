@@ -2,10 +2,10 @@
 =TEXTJOIN("";TRUE;"'";LEFT(A2;FIND(".";A2)-1);"'")
 
 #get surname from mail
-=TEXTJOIN("";TRUE;"'";LEFT(A2;FIND(".";A2)-1);"'")
+=TEXTJOIN("";TRUE;"'";PROPER(MID(A2; FIND("."; A2)+1; FIND("@"; A2) - FIND("."; A2) - 1)));"'")
 
 #get samaccountname from mail
-=TEXTJOIN("";TRUE;"'";CONCAT(LEFT(A2;FIND(".";A2)-1);"_";MID(A2; FIND("."; A2)+1; FIND("@"; A2) - FIND("."; A2) - 1));"'")
+=TEXTJOIN("";TRUE;"'";LEFT(A2;FIND(".";A2)-1);"_";MID(A2; FIND("."; A2)+1; FIND("@"; A2) - FIND("."; A2) - 1);"'")
 
 #get given name from mail
 =TEXTJOIN("";TRUE;"'";TEXTJOIN(" ";TRUE;PROPER(LEFT(A2;FIND(".";A2)-1));PROPER(MID(A2; FIND("."; A2)+1; FIND("@"; A2) - FIND("."; A2) - 1)));"'")
