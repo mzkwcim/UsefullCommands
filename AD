@@ -17,6 +17,31 @@ Get-ADOrganizationalUnit -Filter * -SearchBase "dc=corp,dc=wtct,dc=net" -Server 
         "`t- $_"
     }
 }
+function Generate-Password {
+    param(
+      [Parameter(Mandatory = $true)]
+      [int]$Length = 12
+    )
+
+    $lowercase = "abcdefghijklmnopqrstuvwxyz"
+    $uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    $numbers = "0123456789"
+    $symbols = "!@#$%^&*()-_=+[]{}|;:',./?`~"
+
+    $password = [SecureString]::new()
+
+    $password.AppendChar($lowercase[[char](Get-Random -Maximum $lowercase.Length)])
+    $password.AppendChar($uppercase[[char](Get-Random -Maximum $uppercase.Length)])
+    $password.AppendChar($numbers[[char](Get-Random -Maximum $numbers.Length)])
+    $password.AppendChar($symbols[[char](Get-Random -Maximum $symbols.Length)])
+
+    $allChars = $lowercase + $uppercase + $numbers + $symbols
+    for ($i = 0; $i -lt $Length - 4; $i++) {
+      $password.AppendChar($allChars[(Get-Random -Maximum $allChars.Length)])
+    }
+
+    return $password
+}
 
 #przykładowe tworzenie użytkowników i nadawanie im wartości:
 $users = @()
@@ -26,6 +51,7 @@ $surnames = @()
 $fullnames = @()
 $path = "OU=Customers,OU=3rd Party,OU=Accounts,OU=WTCT,DC=corp,DC=wtct,DC=net"
 for($i = 1; $i -lt $users.Count; $i++){
+    $securePassword = Generate-Password -Length 16
     echo $i
     echo $fullnames[$i]
     New-ADUser -Server 10.90.1.5 -name $fullnames[$i] `
@@ -34,7 +60,7 @@ for($i = 1; $i -lt $users.Count; $i++){
         -SamAccountName $usernames[$i] `
         -UserPrincipalName $users[$i] `
         -Path $path `
-        -AccountPassword (ConvertTo-SecureString "Start123!" -AsPlainText -Force) `
+        -AccountPassword $securePassword `
         -Enabled $true `
 
     Set-ADUser -Server 10.90.1.5 -Identity $usernames[$i] `
@@ -43,6 +69,7 @@ for($i = 1; $i -lt $users.Count; $i++){
     -Displayname $fullnames[$i]
     @("AD_JIRA_External", "AD_JIRA_HMEPM_Customers", "AD_JIRA_HMECS_Customers", "AD_JIRA_CHA_Customers") | % {Add-ADGroupMember -Identity $_ -Members $usernames[$i] -Server 10.90.1.5}
 }
+
 
 #getting recursive list of reports
 function Get-DirectReportsRecursively {
@@ -58,34 +85,6 @@ function Get-DirectReportsRecursively {
             Get-DirectReportsRecursively -UserDN $report -Server $Server -indent "$indent`t"
         }
     }
-}
-
-#this is function for processing mails in powershell to create account
-$Mails = echo waldemar.krakowiak@vml.com hubert.pasikowski@vml.com | % {"'" + $_ + "'"}
-$path = "OU=Customers,OU=3rd Party,OU=Accounts,OU=WTCT,DC=corp,DC=wtct,DC=net"
-foreach($mail in $Mails){
-    $mail = $mail -replace "'"
-    $name = $mail.Substring(0,$mail.IndexOf(".")[0])
-    $sur = $mail.Substring($mail.IndexOf(".")[0]+1) -replace "@.*"
-    $SamAccountName = $mail -replace "@.*" #optionally -replace ".","_"
-    $GivenName = $name.Substring(0,1).ToUpper() + $name.Substring(1)
-    $Surname = $sur.Substring(0,1).ToUpper() + $sur.Substring(1)
-    $DisplayName = $GivenName + ' ' +  $Surname
-
-    New-ADUser -Server 10.90.1.5 -name $fullnames[$i] `
-        -GivenName $GivenName `
-        -Surname $Surname `
-        -SamAccountName $SamAccountName `
-        -UserPrincipalName $user `
-        -Path $path `
-        -AccountPassword (ConvertTo-SecureString "Start123!" -AsPlainText -Force) `
-        -Enabled $true `
-
-    Set-ADUser -Server 10.90.1.5 -Identity $SamAccountName `
-    -EmailAddress $user `
-    -Description "HELPIT-3558" `
-    -Displayname $SamAccountName
-    @("AD_JIRA_External", "AD_JIRA_HMEPM_Customers", "AD_JIRA_HMECS_Customers", "AD_JIRA_CHA_Customers") | % {Add-ADGroupMember -Identity $_ -Members $usernames[$i] -Server 10.90.1.5}
 }
 
 
