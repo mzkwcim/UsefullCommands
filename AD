@@ -87,6 +87,25 @@ function Get-DirectReportsRecursively {
     }
 }
 
+#disabling ADAccounts
+$Mails = @()
+$path = "OU=Disabled Users,OU=WTC,OU=Accounts,OU=WTCT,DC=corp,DC=wtct,DC=net"
+$cog_path = "OU=Disabled Accounts,OU=User Accounts,OU=Cognifide,DC=cognet,DC=local"
+$date = "14/02/2025"
+foreach($mail in $Mails){
+    $user = get-aduser -filter {mail -eq $mail} -server 192.168.182.30 -Properties memberof
+    $user.memberof
+    $user.memberof | % {Remove-ADGroupMember -Identity $_ -Members $user -Server 192.168.182.30 -Confirm:$false}
+    set-aduser $user -server 192.168.182.30 -Replace @{extensionattribute9=$date}
+    Add-ADGroupMember -Identity "DisableSlack" -Members $user -Server 192.168.182.30
+    Disable-ADAccount $user -Server 192.168.182.30
+    Move-ADObject $user -TargetPath $path -Server 192.168.182.30 
+    $cog = get-aduser - filter {mail -eq $mail} -Properties memberof
+    $cog.memberof
+    $cog.memberof | % {remove-adgroupmember -Identity $_ -Members $cog -Confirm:$false}
+    Disable-ADAccount $cog
+    Move-ADObject $cog -TargetPath $cog_path
+}
 
 
 
