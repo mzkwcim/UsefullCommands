@@ -1,0 +1,10 @@
+file transfer between hosts
+scp -i .\Records.pem C:\Users\mzkwcim\Desktop\Python\Decoder\static\swimming.webp ubuntu@ec2-54-89-175-176.compute-1.amazonaws.com:/home/ubuntu/SwimrankingDB/static/
+
+adding people to shared mailbox with fullrights
+$mailingList = "smth@vml.com"
+@('any.user@vml.com') | % {
+    Add-MailboxPermission -Identity $mailingList -User $_ -AccessRights FullAccess -InheritanceType All -Confirm:$false;
+    Add-RecipientPermission -Identity $mailingList -Trustee $_ -AccessRights SendAs -Confirm:$false;
+    Set-Mailbox -Identity $mailingList -GrantSendOnBehalfTo @{Add=$_};
+}
