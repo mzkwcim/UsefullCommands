@@ -8,3 +8,5 @@ $mailingList = "smth@vml.com"
     Add-RecipientPermission -Identity $mailingList -Trustee $_ -AccessRights SendAs -Confirm:$false;
     Set-Mailbox -Identity $mailingList -GrantSendOnBehalfTo @{Add=$_};
 }
+
+add-distributiongroupmember
