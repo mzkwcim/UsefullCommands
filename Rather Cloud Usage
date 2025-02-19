@@ -9,4 +9,4 @@ $mailingList = "smth@vml.com"
     Set-Mailbox -Identity $mailingList -GrantSendOnBehalfTo @{Add=$_};
 }
 
-add-distributiongroupmember
+add-distributiongroupmember -identity some.dl@domain.com -member someone@domain.com
