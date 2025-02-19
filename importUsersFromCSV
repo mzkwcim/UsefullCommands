@@ -1,0 +1,82 @@
+function Generate-Password {
+  param([int]$Length = 12)
+  
+  $lowercase = "abcdefghijklmnopqrstuvwxyz"
+  $uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  $numbers = "0123456789"
+  $symbols = "!@#$%^&*()-_=+[]{}|;:',./?`~"
+  
+  $minChars = 3
+  $password = ""
+  
+  for ($i = 0; $i -lt $minChars; $i++) {
+      $password += $lowercase[Get-Random -Maximum $lowercase.Length]
+      $password += $uppercase[Get-Random -Maximum $uppercase.Length]
+      $password += $numbers[Get-Random -Maximum $numbers.Length]
+      $password += $symbols[Get-Random -Maximum $symbols.Length]
+  }
+  
+  $allChars = $lowercase + $uppercase + $numbers + $symbols
+  for ($i = 0; $i -lt ($Length - ($minChars * 4)); $i++) {
+      $password += $allChars[Get-Random -Maximum $allChars.Length]
+  }
+  
+  return $password
+}
+
+function Test-NotEmpty {
+  param(
+      [Parameter(Mandatory)]
+      [string]$Value,
+      [string]$ParameterName
+  )
+  if ([string]::IsNullOrEmpty($Value)) {
+      Write-Warning "Parametr '$ParameterName' nie może być pusty."
+      return $false
+  }
+  return $true
+}
+
+$csvFilePath = ".\users.csv"
+$defaultOU = "ou=Customers,OU=3rd Party,OU=WTCT,DC=corp,DC=wtct,DC=net"
+$Domain = "@company.com"
+$users = Import-Csv -Path $csvFilePath
+$createdUsers = 0
+$skippedUsers = 0
+
+foreach ($user in $users) {
+$SamAccountName = $user.SamAccountName
+if (-not (Test-NotEmpty $SamAccountName "SamAccountName")) { continue }
+
+if (Get-ADUser -Identity $SamAccountName -ErrorAction SilentlyContinue) {
+    Write-Warning "Użytkownik '$SamAccountName' już istnieje. Pomijanie."
+    $skippedUsers++
+    continue
+}
+
+$GivenName = $user.GivenName
+if (-not (Test-NotEmpty $GivenName "GivenName")) { continue }
+
+$Surname = $user.Surname
+if (-not (Test-NotEmpty $Surname "Surname")) { continue }
+
+$Password = if ([string]::IsNullOrEmpty($user.Password)) { Generate-Password -Length 20 } else { $user.Password }
+$SecurePassword = $Password | ConvertTo-SecureString -AsPlainText -Force
+$DisplayName = $user.DisplayName ?? ($GivenName + " " + $Surname)
+$Email = $user.Email ?? ($GivenName + "." + $Surname + $Domain)
+$OrganizationalUnit = $user.OrganizationalUnit ?? $defaultOU
+
+try {
+    New-ADUser -SamAccountName $SamAccountName -GivenName $GivenName -Surname $Surname `
+        -AccountPassword $SecurePassword -Path $OrganizationalUnit -Enabled $true `
+        -UserPrincipalName $Email -EmailAddress $Email `
+        -Description "$(Get-Date) - Utworzony masowo (nr $($createdUsers + 1))" `
+        -DisplayName $DisplayName
+    $createdUsers++
+    Write-Host "Użytkownik '$SamAccountName' utworzony pomyślnie."
+} catch {
+    Write-Error "Błąd podczas tworzenia użytkownika '$SamAccountName': $($_.Exception.Message)"
+}
+}
+
+Write-Host "Utworzono: $createdUsers użytkowników, pominięto: $skippedUsers użytkowników."
