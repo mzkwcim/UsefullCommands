@@ -106,7 +106,7 @@ foreach($mail in $Mails){
     Disable-ADAccount $cog
     Move-ADObject $cog -TargetPath $cog_path
 }
-
+raport
 
 
 
