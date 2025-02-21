@@ -1,0 +1,69 @@
+# Zmienne zliczające użytkowników
+$controlSum = Get-ADUser -Filter * -Server 10.90.1.5 | Measure-Object | Select-Object -ExpandProperty Count
+$emptyEmails = Get-ADUser -Filter {mail -notlike "*"} -Server 10.90.1.5 | Measure-Object | Select-Object -ExpandProperty Count
+$employeesCount = Get-ADUser -Filter "mail -like '*vml.com*' -or mail -like '*wundermanthompson.com*' -or mail -like '*wundermancommerce.com*'" -Server 10.90.1.5 | Measure-Object | Select-Object -ExpandProperty Count
+$clientsCount = Get-ADUser -Filter "mail -notlike '*vml.com*' -and mail -notlike '*wundermanthompson.com*' -and mail -notlike '*wundermancommerce.com*'" -Server 10.90.1.5 | Measure-Object | Select-Object -ExpandProperty Count
+
+# Zmienne zliczające nieaktywnych użytkowników
+$inactiveControlSum = Get-ADUser -Filter "LastLogonDate -le $((Get-Date).AddDays(-90).ToFileTime())" -Server 10.90.1.5 | Measure-Object | Select-Object -ExpandProperty Count
+$inactiveEmptyMailsSum = Get-ADUser -Filter "LastLogonDate -le $((Get-Date).AddDays(-90).ToFileTime()) -and mail -notlike '*'" -Server 10.90.1.5 | Measure-Object | Select-Object -ExpandProperty Count
+$inactiveEmployeesSum = Get-ADUser -Filter "LastLogonDate -le $((Get-Date).AddDays(-90).ToFileTime()) -and (mail -like '*vml.com*' -or mail -like '*wundermanthompson.com*' -or mail -like '*wundermancommerce.com*')" -Server 10.90.1.5 | Measure-Object | Select-Object -ExpandProperty Count
+$inactiveClientsSum = Get-ADUser -Filter "LastLogonDate -le $((Get-Date).AddDays(-90).ToFileTime()) -and mail -notlike '*vml.com*' -and mail -notlike '*wundermanthompson.com*' -and mail -notlike '*wundermancommerce.com*'" -Server 10.90.1.5 | Measure-Object | Select-Object -ExpandProperty Count
+
+
+$report = @"
+<!DOCTYPE html>
+<html>
+<head>
+<title>Raport Użytkowników AD</title>
+</head>
+<body>
+<h1>Podsumowanie</h1>
+<p>Suma kont: $controlSum</p>
+<p>Suma pracowników: $employeesCount</p>
+<p>Suma kont z pustym adresem e-mail: $emptyEmails</p>
+<p>Suma kont klientów: $clientsCount</p>
+
+<h1>Nieaktywni Użytkownicy (90 dni)</h1>
+<p>Suma nieaktywnych kont: $inactiveControlSum</p>
+<p>Suma nieaktywnych pracowników: $inactiveEmployeesSum</p>
+<p>Suma nieaktywnych kont z pustym adresem e-mail: $inactiveEmptyMailsSum</p>
+<p>Suma nieaktywnych kont klientów: $inactiveClientsSum</p>
+
+<h2>Szczegóły nieaktywnych użytkowników</h2>
+"@
+
+# Funkcja do generowania tabeli HTML dla danej grupy użytkowników
+function GenerateUserTable {
+    param(
+        [string]$title,
+        [string]$filter
+    )
+
+    $report += "<h3>$title</h3>"
+    $report += "<table border='1'>"
+    $report += "<tr><th>SamAccountName</th><th>UserPrincipalName</th></tr>"
+
+    Get-ADUser -Filter $filter -Properties SamAccountName, UserPrincipalName -Server 10.90.1.5 | ForEach-Object {
+        $report += "<tr><td>$($_.SamAccountName)</td><td>$($_.UserPrincipalName)</td></tr>"
+    }
+
+    $report += "</table>"
+}
+
+# Generowanie tabel dla poszczególnych grup nieaktywnych użytkowników
+$inactiveDateFilter = "LastLogonDate -le $((Get-Date).AddDays(-90).ToFileTime())"
+
+GenerateUserTable "Nieaktywni Pracownicy" "$inactiveDateFilter -and (mail -like '*vml.com*' -or mail -like '*wundermanthompson.com*' -or mail -like '*wundermancommerce.com*')"
+GenerateUserTable "Nieaktywni Klienci" "$inactiveDateFilter -and mail -notlike '*vml.com*' -and mail -notlike '*wundermanthompson.com*' -and mail -notlike '*wundermancommerce.com*'"
+GenerateUserTable "Nieaktywne Konta z Pustym E-mailem" "$inactiveDateFilter -and mail -notlike '*'"
+
+$report += @"
+</body>
+</html>
+"@
+
+# Zapis raportu do pliku HTML
+$report | Out-File -FilePath "C:\raport_uzytkownikow.html" -Encoding UTF8
+
+Write-Host "Raport został zapisany do pliku C:\raport_uzytkownikow.html"
