@@ -1,69 +1,149 @@
-# Zmienne zliczające użytkowników
+# Zmienne zliczające użytkowników (pozostają bez zmian)
 $controlSum = Get-ADUser -Filter * -Server 10.90.1.5 | Measure-Object | Select-Object -ExpandProperty Count
 $emptyEmails = Get-ADUser -Filter {mail -notlike "*"} -Server 10.90.1.5 | Measure-Object | Select-Object -ExpandProperty Count
 $employeesCount = Get-ADUser -Filter "mail -like '*vml.com*' -or mail -like '*wundermanthompson.com*' -or mail -like '*wundermancommerce.com*'" -Server 10.90.1.5 | Measure-Object | Select-Object -ExpandProperty Count
 $clientsCount = Get-ADUser -Filter "mail -notlike '*vml.com*' -and mail -notlike '*wundermanthompson.com*' -and mail -notlike '*wundermancommerce.com*'" -Server 10.90.1.5 | Measure-Object | Select-Object -ExpandProperty Count
 
-# Zmienne zliczające nieaktywnych użytkowników
+# Zmienne zliczające nieaktywnych użytkowników (pozostają bez zmian)
 $inactiveControlSum = Get-ADUser -Filter "LastLogonDate -le $((Get-Date).AddDays(-90).ToFileTime())" -Server 10.90.1.5 | Measure-Object | Select-Object -ExpandProperty Count
 $inactiveEmptyMailsSum = Get-ADUser -Filter "LastLogonDate -le $((Get-Date).AddDays(-90).ToFileTime()) -and mail -notlike '*'" -Server 10.90.1.5 | Measure-Object | Select-Object -ExpandProperty Count
 $inactiveEmployeesSum = Get-ADUser -Filter "LastLogonDate -le $((Get-Date).AddDays(-90).ToFileTime()) -and (mail -like '*vml.com*' -or mail -like '*wundermanthompson.com*' -or mail -like '*wundermancommerce.com*')" -Server 10.90.1.5 | Measure-Object | Select-Object -ExpandProperty Count
 $inactiveClientsSum = Get-ADUser -Filter "LastLogonDate -le $((Get-Date).AddDays(-90).ToFileTime()) -and mail -notlike '*vml.com*' -and mail -notlike '*wundermanthompson.com*' -and mail -notlike '*wundermancommerce.com*'" -Server 10.90.1.5 | Measure-Object | Select-Object -ExpandProperty Count
-
 
 $report = @"
 <!DOCTYPE html>
 <html>
 <head>
 <title>Raport Użytkowników AD</title>
+<style>
+body {
+font-family: Arial, sans-serif;
+margin: 20px;
+}
+h1 {
+color: navy;
+text-align: center;
+}
+h2 {
+color: navy;
+}
+h3 {
+color: navy;
+}
+table {
+width: 100%; /* Ustawiamy szerokość na 100%, aby wypełnić kontener */
+border-collapse: collapse;
+margin-top: 20px;
+}
+th, td {
+padding: 8px;
+border: 1px solid #ddd;
+text-align: left;
+}
+th {
+background-color: #f2f2f2;
+}
+/* Style dla kontenera tabel podsumowania */
+.summary-container {
+display: flex;
+justify-content: space-around; /* Rozmieszcza tabele równomiernie */
+margin-bottom: 30px; /* Dodaje odstęp od kolejnej sekcji */
+}
+/* Style dla kontenera tabel szczegółowych */
+.details-container {
+display: flex;
+justify-content: space-around; /* Rozmieszcza tabele równomiernie */
+margin-bottom: 30px; /* Dodaje odstęp od kolejnej sekcji */
+}
+/* Style dla pojedynczej tabeli w kontenerze */
+.table-wrapper {
+width: 30%; /* Ustawiamy szerokość każdej tabeli na 30%, aby zmieściły się trzy obok siebie */
+}
+</style>
 </head>
 <body>
 <h1>Podsumowanie</h1>
-<p>Suma kont: $controlSum</p>
-<p>Suma pracowników: $employeesCount</p>
-<p>Suma kont z pustym adresem e-mail: $emptyEmails</p>
-<p>Suma kont klientów: $clientsCount</p>
+<div class="summary-container">
+<div class="table-wrapper">
+    <h2>Podstawowe Statystyki</h2>
+    <table border="1">
+        <tr><th>Opis</th><th>Wartość</th></tr>
+        <tr><td>Suma kont</td><td>$controlSum</td></tr>
+        <tr><td>Suma pracowników</td><td>$employeesCount</td></tr>
+    </table>
+</div>
+<div class="table-wrapper">
+    <h2>Statystyki E-maili i Klientów</h2>
+    <table border="1">
+        <tr><th>Opis</th><th>Wartość</th></tr>
+        <tr><td>Suma kont z pustym adresem e-mail</td><td>$emptyEmails</td></tr>
+        <tr><td>Suma kont klientów</td><td>$clientsCount</td></tr>
+    </table>
+</div>
+</div>
 
-<h1>Nieaktywni Użytkownicy (90 dni)</h1>
-<p>Suma nieaktywnych kont: $inactiveControlSum</p>
-<p>Suma nieaktywnych pracowników: $inactiveEmployeesSum</p>
-<p>Suma nieaktywnych kont z pustym adresem e-mail: $inactiveEmptyMailsSum</p>
-<p>Suma nieaktywnych kont klientów: $inactiveClientsSum</p>
+<h2>Nieaktywni Użytkownicy (90 dni)</h2>
+<div class="summary-container">
+<div class="table-wrapper">
+    <h2>Podstawowe Statystyki Nieaktywnych</h2>
+    <table border="1">
+        <tr><th>Opis</th><th>Wartość</th></tr>
+        <tr><td>Suma nieaktywnych kont</td><td>$inactiveControlSum</td></tr>
+        <tr><td>Suma nieaktywnych pracowników</td><td>$inactiveEmployeesSum</td></tr>
+    </table>
+</div>
+<div class="table-wrapper">
+    <h2>Statystyki E-maili i Klientów Nieaktywnych</h2>
+    <table border="1">
+        <tr><th>Opis</th><th>Wartość</th></tr>
+        <tr><td>Suma nieaktywnych kont z pustym adresem e-mail</td><td>$inactiveEmptyMailsSum</td></tr>
+        <tr><td>Suma nieaktywnych kont klientów</td><td>$inactiveClientsSum</td></tr>
+    </table>
+</div>
+</div>
 
 <h2>Szczegóły nieaktywnych użytkowników</h2>
+<div class="details-container">
 "@
 
 # Funkcja do generowania tabeli HTML dla danej grupy użytkowników
 function GenerateUserTable {
-    param(
-        [string]$title,
-        [string]$filter
-    )
+param(
+    [string]$title,
+    [string]$filter
+)
 
-    $report += "<h3>$title</h3>"
-    $report += "<table border='1'>"
-    $report += "<tr><th>SamAccountName</th><th>UserPrincipalName</th></tr>"
+$tableRows = @()  # Inicjalizacja tablicy
 
-    Get-ADUser -Filter $filter -Properties SamAccountName, UserPrincipalName -Server 10.90.1.5 | ForEach-Object {
-        $report += "<tr><td>$($_.SamAccountName)</td><td>$($_.UserPrincipalName)</td></tr>"
-    }
+$tableRows += "<div class='table-wrapper'>"  # Dodajemy wrapper dla każdej tabeli
+$tableRows += "<h3>$title</h3>"
+$tableRows += "<table border='1'>"
+$tableRows += "<tr><th>SamAccountName</th><th>UserPrincipalName</th></tr>"
 
-    $report += "</table>"
+Get-ADUser -Filter $filter -Properties SamAccountName, UserPrincipalName -Server 10.90.1.5 | ForEach-Object {
+    $tableRows += "<tr><td>$($_.SamAccountName)</td><td>$($_.UserPrincipalName)</td></tr>"
+}
+
+$tableRows += "</table>"
+$tableRows += "</div>" # Zamykamy wrapper
+
+return $tableRows -join ""  # Połączenie tablicy w jeden string
 }
 
 # Generowanie tabel dla poszczególnych grup nieaktywnych użytkowników
 $inactiveDateFilter = "LastLogonDate -le $((Get-Date).AddDays(-90).ToFileTime())"
 
-GenerateUserTable "Nieaktywni Pracownicy" "$inactiveDateFilter -and (mail -like '*vml.com*' -or mail -like '*wundermanthompson.com*' -or mail -like '*wundermancommerce.com*')"
-GenerateUserTable "Nieaktywni Klienci" "$inactiveDateFilter -and mail -notlike '*vml.com*' -and mail -notlike '*wundermanthompson.com*' -and mail -notlike '*wundermancommerce.com*'"
-GenerateUserTable "Nieaktywne Konta z Pustym E-mailem" "$inactiveDateFilter -and mail -notlike '*'"
+$report += GenerateUserTable "Nieaktywni Pracownicy" "$($inactiveDateFilter) -and (mail -like '*vml.com*' -or mail -like '*wundermanthompson.com*' -or mail -like '*wundermancommerce.com*')"
+$report += GenerateUserTable "Nieaktywni Klienci" "$($inactiveDateFilter) -and (mail -notlike '*vml.com*' -and mail -notlike '*wundermanthompson.com*' -and mail -notlike '*wundermancommerce.com*')"
+$report += GenerateUserTable "Nieaktywne Konta z Pustym E-mailem" "$($inactiveDateFilter) -and mail -notlike '*'"
 
 $report += @"
+</div>
 </body>
 </html>
 "@
 
-# Zapis raportu do pliku HTML
+# Zapis raportu do pliku HTML (pozostaje bez zmian)
 $report | Out-File -FilePath "C:\raport_uzytkownikow.html" -Encoding UTF8
 
 Write-Host "Raport został zapisany do pliku C:\raport_uzytkownikow.html"
