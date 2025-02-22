@@ -18,15 +18,9 @@ body {
     font-family: Arial, sans-serif;
     margin: 20px;
 }
-h1 {
+h1,h2,h3 {
     color: navy;
     text-align: center;
-}
-h2 {
-    color: navy;
-}
-h3 {
-    color: navy;
 }
 table {
     width: 100%;
@@ -39,16 +33,18 @@ th, td {
     text-align: left;
 }
 th {
-    background-color: #f2f2f2;
+    background-color: #333;
+    color: white; 
+}
+tr:nth-child(even) {
+    background-color: #f2f2f2; 
+}
+tr:nth-child(odd) {
+    background-color: #ffffff; 
 }
 .summary-container {
     display: flex;
     justify-content: space-around;
-    margin-bottom: 30px; 
-}
-.details-container {
-    display: flex;
-    justify-content: space-around; 
     margin-bottom: 30px; 
 }
 .table-wrapper {
@@ -80,7 +76,7 @@ th {
     </table>
 </div>
 </div>
-
+<hr>
 <h2>Szczegóły nieaktywnych użytkowników</h2>
 <div class="details-container">
 "@
@@ -107,12 +103,47 @@ function GenerateUserTable {
     return $tableRows -join "" 
 }
 
+function GenerateInactiveDomainUserTable {
+    param (
+        [string]$server = "10.90.1.5"
+    )
+
+    $inactiveDateFilter = "LastLogonDate -le $((Get-Date).AddDays(-90).ToFileTime())"
+
+    $uniqueDomains = (Get-ADUser -Filter "$($inactiveDateFilter) -and mail -notlike '*vml.com*' -and mail -notlike '*wundermanthompson.com*' -and mail -notlike '*wundermancommerce.com*'" -Server $server -Properties mail | ForEach-Object { if ($_.mail -match '@(.*)') { $Matches[1] } } | Sort-Object -Unique -CaseSensitive:$false)
+
+    $allTables = @() 
+
+
+    foreach ($domain in $uniqueDomains) {
+        $tableRows = @()
+        $tableRows += "<div class='table-wrapper'>"
+        $tableRows += "<h3>Nieaktywni użytkownicy w domenie: $domain</h3>"
+        $tableRows += "<table border='1'>"
+        $tableRows += "<tr><th>SamAccountName</th><th>UserPrincipalName</th></tr>"
+
+        $domainInactiveUsers = Get-ADUser -Filter "$($inactiveDateFilter) -and mail -notlike '*vml.com*' -and mail -notlike '*wundermanthompson.com*' -and mail -notlike '*wundermancommerce.com*'" -Server $server -Properties SamAccountName, UserPrincipalName
+
+
+        foreach ($user in $domainInactiveUsers) {
+            $tableRows += "<tr><td>$($user.SamAccountName)</td><td>$($user.UserPrincipalName)</td></tr>"
+        }
+
+        $tableRows += "</table>"
+        $tableRows += "</div>"
+
+        $allTables += $tableRows -join "" 
+    }
+
+    return $allTables -join "" 
+}
+
 $inactiveDateFilter = "LastLogonDate -le $((Get-Date).AddDays(-90).ToFileTime())"
 
 $report += GenerateUserTable "Nieaktywni Pracownicy" "$($inactiveDateFilter) -and (mail -like '*vml.com*' -or mail -like '*wundermanthompson.com*' -or mail -like '*wundermancommerce.com*')"
 $report += GenerateUserTable "Nieaktywni Klienci" "$($inactiveDateFilter) -and (mail -notlike '*vml.com*' -and mail -notlike '*wundermanthompson.com*' -and mail -notlike '*wundermancommerce.com*')"
 $report += GenerateUserTable "Nieaktywne Konta z Pustym E-mailem" "$($inactiveDateFilter) -and mail -notlike '*'"
-
+# $report += GenerateInactiveDomainUserTable
 $report += @"
 </div>
 </body>
