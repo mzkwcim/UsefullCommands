@@ -1,0 +1,215 @@
+$server = "10.90.1.5"
+$days = -90
+$controlSum = Get-ADUser -Filter * -Server $server | Measure-Object | Select-Object -ExpandProperty Count
+$emptyEmails = Get-ADUser -Filter {mail -notlike "*"} -Server $server | Measure-Object | Select-Object -ExpandProperty Count
+$employeesCount = Get-ADUser -Filter "mail -like '*vml.com*' -or mail -like '*wundermanthompson.com*' -or mail -like '*wundermancommerce.com*'" -Server $server | Measure-Object | Select-Object -ExpandProperty Count
+$clientsCount = Get-ADUser -Filter "mail -notlike '*vml.com*' -and mail -notlike '*wundermanthompson.com*' -and mail -notlike '*wundermancommerce.com*'" -Server $server | Measure-Object | Select-Object -ExpandProperty Count
+
+$inactiveControlSum = Get-ADUser -Filter "LastLogonDate -le $((Get-Date).AddDays($days).ToFileTime())" -Server $server | Measure-Object | Select-Object -ExpandProperty Count
+$inactiveEmptyMailsSum = Get-ADUser -Filter "LastLogonDate -le $((Get-Date).AddDays($days).ToFileTime()) -and mail -notlike '*'" -Server $server | Measure-Object | Select-Object -ExpandProperty Count
+$inactiveEmployeesSum = Get-ADUser -Filter "LastLogonDate -le $((Get-Date).AddDays($days).ToFileTime()) -and (mail -like '*vml.com*' -or mail -like '*wundermanthompson.com*' -or mail -like '*wundermancommerce.com*')" -Server $server | Measure-Object | Select-Object -ExpandProperty Count
+$inactiveClientsSum = Get-ADUser -Filter "LastLogonDate -le $((Get-Date).AddDays($days).ToFileTime()) -and mail -notlike '*vml.com*' -and mail -notlike '*wundermanthompson.com*' -and mail -notlike '*wundermancommerce.com*'" -Server $server | Measure-Object | Select-Object -ExpandProperty Count
+
+$report = @"
+<!DOCTYPE html>
+<html>
+<head>
+<title>Raport Użytkowników AD</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+}
+h1,h2,h3 {
+    color: navy;
+    text-align: center;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+th, td {
+    padding: 8px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+th {
+    background-color: #333;
+    color: white;
+}
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+tr:nth-child(odd) {
+    background-color: #ffffff;
+}
+.summary-container {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 30px;
+}
+.table-wrapper {
+    width: 30%;
+    margin: 10px;
+}
+
+.domain-tables-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+
+
+.domain-table {
+    display: none;
+}
+</style>
+</head>
+<body>
+<h1>Podsumowanie</h1>
+<div class="summary-container">
+<div class="table-wrapper">
+<h2>Podstawowe Statystyki</h2>
+<table border="1">
+    <tr><th>Opis</th><th>Wartość</th></tr>
+    <tr><td>Suma kont</td><td>$controlSum</td></tr>
+    <tr><td>Suma pracowników</td><td>$employeesCount</td></tr>
+    <tr><td>Suma kont z pustym adresem e-mail</td><td>$emptyEmails</td></tr>
+    <tr><td>Suma kont klientów</td><td>$clientsCount</td></tr>
+</table>
+</div>
+<div class="table-wrapper">
+<h2>Statystyki nieaktywnych kont</h2>
+<table border="1">
+    <tr><th>Opis</th><th>Wartość</th></tr>
+    <tr><td>Suma nieaktywnych kont</td><td>$inactiveControlSum</td></tr>
+    <tr><td>Suma nieaktywnych pracowników</td><td>$inactiveEmployeesSum</td></tr>
+    <tr><td>Suma nieaktywnych kont z pustym adresem e-mail</td><td>$inactiveEmptyMailsSum</td></tr>
+    <tr><td>Suma nieaktywnych kont klientów</td><td>$inactiveClientsSum</td></tr>
+</table>
+</div>
+</div>
+<hr>
+<h2>Szczegóły nieaktywnych użytkowników</h2>
+<div class="details-container">
+"@
+
+function GenerateUserTable {
+  param(
+      [string]$title,
+      [string]$filter
+  )
+  
+  $tableRows = @()
+  $tableRows += "<div class='domain-tables-container'>"
+  $tableRows += "<h3>$title</h3>"
+  $tableRows += "<table border='1'>"
+  $tableRows += "<tr><th>SamAccountName</th><th>Mail</th></tr>"
+  
+  Get-ADUser -Filter $filter -Properties SamAccountName, Mail -Server $server | ForEach-Object {
+      $tableRows += "<tr><td>$($_.SamAccountName)</td><td>$($_.Mail)</td></tr>"
+  }
+  
+  $tableRows += "</table>"
+  $tableRows += "</div>"
+  
+  return $tableRows -join ""
+}
+
+function Get-UniqueDomains {
+  param (
+      [string]$server,
+      [int]$days
+  )
+  
+  $inactiveDateFilter = "LastLogonDate -le $((Get-Date).AddDays($days).ToFileTime())"
+  
+  $uniqueDomains = (Get-ADUser -Filter "$($inactiveDateFilter) -and mail -notlike '*vml.com*' -and mail -notlike '*wundermanthompson.com*' -and mail -notlike '*wundermancommerce.com*'" -Server $server -Properties mail | ForEach-Object { if ($_.mail -match '@(.*)') { $Matches[1] } } | Sort-Object -Unique -CaseSensitive:$false)
+  
+  return $uniqueDomains
+  }
+  
+  function Get-DomainUsers {
+  param (
+      [string]$server,
+      [int]$days,
+      [string]$domain
+  )
+  
+  $inactiveDateFilter = "LastLogonDate -le $((Get-Date).AddDays($days).ToFileTime())"
+  
+  $domainUsers = Get-ADUser -Filter "$($inactiveDateFilter) -and mail -like '*@$domain'" -Server $server -Properties SamAccountName, Mail | Select-Object SamAccountName, Mail
+  
+  return $domainUsers | ConvertTo-Json
+}
+
+$uniqueDomains = Get-UniqueDomains -server $server -days $days
+
+$domainOptions = ""
+foreach ($domain in $uniqueDomains) {
+$domainOptions += "<option value='$domain'>$domain</option>"
+}
+
+$domainDataJson = @{}
+foreach ($domain in $uniqueDomains) {
+$domainDataJson[$domain] = Get-DomainUsers -server $server -days $days -domain $domain
+}
+
+$domainDataJsonString = $domainDataJson | ConvertTo-Json
+
+$report += GenerateUserTable "Nieaktywni Pracownicy" "LastLogonDate -le $((Get-Date).AddDays($days).ToFileTime()) -and (mail -like '*vml.com*' -or mail -like '*wundermanthompson.com*' -or mail -like '*wundermancommerce.com*')"
+$report += GenerateUserTable "Nieaktywni Klienci" "LastLogonDate -le $((Get-Date).AddDays($days).ToFileTime()) -and (mail -notlike '*vml.com*' -and mail -notlike '*wundermanthompson.com*' -and mail -notlike '*wundermancommerce.com*')"
+$report += GenerateUserTable "Nieaktywne Konta z Pustym E-mailem" "LastLogonDate -le $((Get-Date).AddDays($days).ToFileTime()) -and mail -notlike '*'"
+$report += "<hr>"
+$report += "<h2>Nieaktywni klienci z podziałem na firmy</h2>"
+
+$report += @"
+<label for="domainSelect">Wybierz domenę:</label>
+<select id="domainSelect" onchange="showDomainTable()">
+  <option value="">Wybierz...</option>
+  $domainOptions
+</select>
+
+  <div id="domainTableContainer"></div>
+</div>
+</body>
+<script>
+var domainData = $domainDataJsonString;
+console.log("domainData:", domainData); 
+
+function showDomainTable() {
+  var selectedDomain = document.getElementById("domainSelect").value;
+  var domainTableContainer = document.getElementById("domainTableContainer");
+
+  domainTableContainer.innerHTML = "";
+
+  if (selectedDomain !== "") {
+      var users = typeof domainData[selectedDomain] === 'string' ? JSON.parse(domainData[selectedDomain]) : domainData[selectedDomain];
+
+      if (users && users.length > 0) {
+          var tableHTML = "<h3>Nieaktywni użytkownicy w domenie: " + selectedDomain + "</h3>";
+          tableHTML += "<table border='1'>";
+          tableHTML += "<tr><th>SamAccountName</th><th>Mail</th></tr>";
+
+          for (var i = 0; i < users.length; i++) {
+              tableHTML += "<tr><td>" + users[i].SamAccountName + "</td><td>" + users[i].Mail + "</td></tr>";
+          }
+
+          tableHTML += "</table>";
+          domainTableContainer.innerHTML = tableHTML;
+      } else {
+          domainTableContainer.innerHTML = "<p>Brak danych dla wybranej domeny.</p>";
+      }
+  }
+}
+</script>
+"@
+
+$report += @"
+</html>
+"@
+
+$report | Out-File -FilePath "C:\raport_uzytkownikow.html" -Encoding UTF8
+
+Write-Host "Raport został zapisany do pliku C:\raport_uzytkownikow.html"
