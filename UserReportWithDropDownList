@@ -58,6 +58,7 @@ tr:nth-child(odd) {
     display: flex;
     flex-wrap: wrap;
     justify-content: flex-start;
+    text-align: center;
 }
 
 
